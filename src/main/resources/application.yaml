@@ -1,0 +1,11 @@
+server:
+  servlet:
+    context-path: "/api"
+  datasource:
+    url: jdbc:postgresql://localhost:5432/users
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    driverClassName: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update

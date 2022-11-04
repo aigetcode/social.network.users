@@ -14,7 +14,7 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ExceptionResponse<?>> handle(Throwable ex) {
         log.error("Exception handling and serialization: " + ex.getMessage(), ex);
-        BaseErrorResponse baseErrorResponse = new BaseErrorResponse(ex.getMessage(), ex.getCause());
+        BaseErrorResponse baseErrorResponse = new BaseErrorResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(ExceptionResponse.from(ex, baseErrorResponse));
@@ -23,7 +23,7 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ExceptionResponse<?>> handle(IllegalArgumentException ex) {
         log.error("Exception wrong arguments: " + ex.getMessage(), ex);
-        BaseErrorResponse baseErrorResponse = new BaseErrorResponse(ex.getMessage(), ex.getCause());
+        BaseErrorResponse baseErrorResponse = new BaseErrorResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(ExceptionResponse.from(ex, baseErrorResponse));

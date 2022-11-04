@@ -10,12 +10,10 @@ import java.util.Date;
 public class BaseErrorResponse {
 
     private String message;
-    private Throwable cause;
     private Date time;
 
-    public BaseErrorResponse(String message, Throwable cause) {
+    public BaseErrorResponse(String message) {
         this.message = message;
-        this.cause = cause;
         this.time = new Date();
     }
 }

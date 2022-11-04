@@ -36,8 +36,8 @@ public class UserEndpoint {
 
     @GetMapping
     public ResponseEntity<?> getPageUsers(@RequestParam(value = "pageIndex") int pageIndex,
-                                                        @RequestParam(value = "pageSize") int pageSize,
-                                                        @RequestParam(value = "country") String country) {
+                                          @RequestParam(value = "pageSize") int pageSize,
+                                          @RequestParam(value = "country") String country) {
         Page<UserEntry> users = userService.getPageUsers(pageIndex, pageSize, country);
         return ResponseEntity.ok(SuccessResponse.of(users));
     }
@@ -62,24 +62,38 @@ public class UserEndpoint {
                 userInput.getLastName(), UserSex.valueOf(userInput.getSex()), userInput.getBirthdate(),
                 null, userInput.getAvatar(), userInput.getUserDescription(), userInput.getNickname(),
                 userInput.getEmail(), userInput.getPhoneNumber());
-        UUID uuid = userService.createUser(user);
+        UUID uuid = userService.createUser(user, userInput.getHardSkills());
         return ResponseEntity.ok(SuccessResponse.of(uuid.toString()));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@Valid @RequestBody UserInput userInput,
-                                             @PathVariable String id) {
+                                        @PathVariable String id) {
         User user = new User(userInput.getVersion(), userInput.getName(), userInput.getSurname(),
                 userInput.getLastName(), UserSex.valueOf(userInput.getSex()), userInput.getBirthdate(),
                 null, userInput.getAvatar(), userInput.getUserDescription(), userInput.getNickname(),
                 userInput.getEmail(), userInput.getPhoneNumber());
-        UUID uuid = userService.updateUser(UUID.fromString(id), user);
+        UUID uuid = userService.updateUser(UUID.fromString(id), user, userInput.getHardSkills());
         return ResponseEntity.ok(SuccessResponse.of(uuid.toString()));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable String id) {
         userService.deleteUser(UUID.fromString(id));
+        return ResponseEntity.ok(SuccessResponse.of(null));
+    }
+
+    @PostMapping("/{followerId}/subscribe/{userId}")
+    public ResponseEntity<?> subscribe(@PathVariable String userId,
+                                       @PathVariable String followerId) {
+        userService.subscribe(UUID.fromString(userId), UUID.fromString(followerId));
+        return ResponseEntity.ok(SuccessResponse.of(null));
+    }
+
+    @PostMapping("/{followerId}/unsubscribe/{userId}")
+    public ResponseEntity<?> unsubscribe(@PathVariable String userId,
+                                         @PathVariable String followerId) {
+        userService.unsubscribe(UUID.fromString(userId), UUID.fromString(followerId));
         return ResponseEntity.ok(SuccessResponse.of(null));
     }
 

@@ -8,6 +8,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -37,5 +38,7 @@ public class UserInput {
     @Email
     private String email;
     private String phoneNumber;
+
+    private List<String> hardSkills;
 
 }

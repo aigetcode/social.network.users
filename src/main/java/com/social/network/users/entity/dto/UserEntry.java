@@ -1,6 +1,7 @@
 package com.social.network.users.entity.dto;
 
 import com.social.network.users.entity.Country;
+import com.social.network.users.entity.HardSkill;
 import com.social.network.users.entity.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +9,6 @@ import lombok.Setter;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -28,6 +28,7 @@ public class UserEntry {
     private String email;
     private String phoneNumber;
 
+    private List<HardSkillEntry> hardSkills;
     private List<FollowerEntry> followers;
 
     public static List<UserEntry> fromListUsers(List<User> users) {
@@ -59,20 +60,36 @@ public class UserEntry {
         userEntry.setEmail(user.getEmail());
         userEntry.setPhoneNumber(user.getPhoneNumber());
 
-        List<User> followers = user.getFollowers();
+        setHardSkills(user.getHardSkills(), userEntry);
+        setFollowers(user.getFollowers(), userEntry);
+
+        return userEntry;
+    }
+
+    private static void setHardSkills(List<HardSkill> hardSkills, UserEntry userEntry) {
+        if (!hardSkills.isEmpty()) {
+            List<HardSkillEntry> hardSkillEntries = hardSkills.stream()
+                    .map(skill -> new HardSkillEntry(skill.getName()))
+                    .toList();
+            userEntry.setHardSkills(hardSkillEntries);
+        } else {
+            userEntry.setHardSkills(Collections.emptyList());
+        }
+    }
+
+    private static void setFollowers(List<User> followers, UserEntry userEntry) {
         if (!followers.isEmpty()) {
             List<FollowerEntry> followerEntries = followers.stream().map(follower -> {
                 FollowerEntry followerEntry = new FollowerEntry();
                 followerEntry.setId(follower.getId().toString());
                 followerEntry.setName(follower.getName());
-                followerEntry.setSurname(followerEntry.getSurname());
+                followerEntry.setSurname(follower.getSurname());
                 return followerEntry;
             }).toList();
             userEntry.setFollowers(followerEntries);
         } else {
             userEntry.setFollowers(Collections.emptyList());
         }
-        return userEntry;
     }
 
 }

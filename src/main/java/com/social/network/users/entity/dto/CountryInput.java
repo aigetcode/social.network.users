@@ -1,0 +1,20 @@
+package com.social.network.users.entity.dto;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.NotEmpty;
+
+@Getter
+@Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class CountryInput {
+
+    private String id;
+    @NotEmpty
+    private String name;
+    private String region;
+    private String subregion;
+
+}

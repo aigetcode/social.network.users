@@ -10,3 +10,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
+springdoc:
+  api-docs:
+    path: "/api-docs" #api will response on /api-docs
+  swagger-ui:
+    path: "/swagger-ui.html" # swagger: http://localhost:8080/api/swagger-ui.html
+    version: "v1"

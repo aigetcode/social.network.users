@@ -21,6 +21,7 @@
         <lombok.version>1.18.24</lombok.version>
         <postgres.version>42.5.0</postgres.version>
         <common.validation.version>1.7</common.validation.version>
+        <openapi.version>1.6.12</openapi.version>
     </properties>
 
     <dependencies>
@@ -64,6 +65,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <version>${spring.boot.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${openapi.version}</version>
         </dependency>
 
         <dependency>

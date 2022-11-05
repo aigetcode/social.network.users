@@ -27,8 +27,6 @@ public class UserInput {
     @NotEmpty
     private String sex; // UserSex
     private Date birthdate;
-
-    // todo: change on Country obj after liquibase
     private String country;
     private String avatar;
     @Size(max = 1000)

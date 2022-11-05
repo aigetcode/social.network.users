@@ -1,6 +1,7 @@
 package com.social.network.users.endpoint;
 
 import com.social.network.users.endpoint.mvc.SuccessResponse;
+import com.social.network.users.entity.Country;
 import com.social.network.users.entity.User;
 import com.social.network.users.entity.UserSex;
 import com.social.network.users.entity.dto.UserEntry;
@@ -9,6 +10,7 @@ import com.social.network.users.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +26,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("/v1/users")
 public class UserEndpoint {
@@ -58,9 +61,10 @@ public class UserEndpoint {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createUser(@Valid @RequestBody UserInput userInput) {
+        Country country = new Country(UUID.fromString(userInput.getCountry()));
         User user = new User(userInput.getVersion(), userInput.getName(), userInput.getSurname(),
                 userInput.getLastName(), UserSex.valueOf(userInput.getSex()), userInput.getBirthdate(),
-                null, userInput.getAvatar(), userInput.getUserDescription(), userInput.getNickname(),
+                country, userInput.getAvatar(), userInput.getUserDescription(), userInput.getNickname(),
                 userInput.getEmail(), userInput.getPhoneNumber());
         UUID uuid = userService.createUser(user, userInput.getHardSkills());
         return ResponseEntity.ok(SuccessResponse.of(uuid.toString()));
@@ -69,9 +73,10 @@ public class UserEndpoint {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@Valid @RequestBody UserInput userInput,
                                         @PathVariable String id) {
+        Country country = new Country(UUID.fromString(userInput.getCountry()));
         User user = new User(userInput.getVersion(), userInput.getName(), userInput.getSurname(),
                 userInput.getLastName(), UserSex.valueOf(userInput.getSex()), userInput.getBirthdate(),
-                null, userInput.getAvatar(), userInput.getUserDescription(), userInput.getNickname(),
+                country, userInput.getAvatar(), userInput.getUserDescription(), userInput.getNickname(),
                 userInput.getEmail(), userInput.getPhoneNumber());
         UUID uuid = userService.updateUser(UUID.fromString(id), user, userInput.getHardSkills());
         return ResponseEntity.ok(SuccessResponse.of(uuid.toString()));

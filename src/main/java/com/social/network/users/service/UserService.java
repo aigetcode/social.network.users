@@ -2,6 +2,7 @@ package com.social.network.users.service;
 
 import com.social.network.users.dao.HardSkillRepository;
 import com.social.network.users.dao.UserRepository;
+import com.social.network.users.entity.Country;
 import com.social.network.users.entity.HardSkill;
 import com.social.network.users.entity.User;
 import com.social.network.users.entity.dto.UserEntry;
@@ -21,7 +22,9 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-public record UserService(UserRepository userRepository, HardSkillRepository hardSkillService) {
+public record UserService(UserRepository userRepository,
+                          HardSkillRepository hardSkillService,
+                          CountryService countryService) {
 
     public Page<UserEntry> getPageUsers(int pageIndex, int pageSize, String countryName) {
         log.info(String.format("Get page users page: %s, size: %s", pageIndex, pageSize));
@@ -53,6 +56,7 @@ public record UserService(UserRepository userRepository, HardSkillRepository har
         Utils.required(user, "User is required");
         Utils.verifyEmail(user.getEmail(), "Email is not valid");
 
+        setCountry(user.getCountry(), user);
         setHardSkills(hardSkillsInput, user);
         User savedUser = userRepository.save(user);
         log.info("Saved user");
@@ -65,6 +69,7 @@ public record UserService(UserRepository userRepository, HardSkillRepository har
         Utils.required(user, "User is required");
         Utils.state(!userRepository.existsById(id), "User doesn't exist");
 
+        setCountry(user.getCountry(), user);
         setHardSkills(hardSkillsInput, user);
         User savedUser = userRepository.save(user);
         log.info(String.format("Updated user by id[%s]", id));
@@ -112,6 +117,14 @@ public record UserService(UserRepository userRepository, HardSkillRepository har
                 }).toList();
 
         user.setHardSkills(hardSkills);
+    }
+
+    private void setCountry(Country country, User user) {
+        if (country == null)
+            return;
+
+        country = countryService.getCountryById(country.getId());
+        user.setCountry(country);
     }
 
 }

@@ -7,6 +7,7 @@ import com.social.network.users.entity.UserSex;
 import com.social.network.users.entity.dto.UserEntry;
 import com.social.network.users.entity.dto.UserInput;
 import com.social.network.users.service.UserService;
+import com.social.network.users.util.Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,11 +62,7 @@ public class UserEndpoint {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createUser(@Valid @RequestBody UserInput userInput) {
-        Country country = new Country(UUID.fromString(userInput.getCountry()));
-        User user = new User(userInput.getVersion(), userInput.getName(), userInput.getSurname(),
-                userInput.getLastName(), UserSex.valueOf(userInput.getSex()), userInput.getBirthdate(),
-                country, userInput.getAvatar(), userInput.getUserDescription(), userInput.getNickname(),
-                userInput.getEmail(), userInput.getPhoneNumber());
+        User user = Utils.createUser(userInput);
         UUID uuid = userService.createUser(user, userInput.getHardSkills());
         return ResponseEntity.ok(SuccessResponse.of(uuid.toString()));
     }
@@ -73,11 +70,7 @@ public class UserEndpoint {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@Valid @RequestBody UserInput userInput,
                                         @PathVariable String id) {
-        Country country = new Country(UUID.fromString(userInput.getCountry()));
-        User user = new User(userInput.getVersion(), userInput.getName(), userInput.getSurname(),
-                userInput.getLastName(), UserSex.valueOf(userInput.getSex()), userInput.getBirthdate(),
-                country, userInput.getAvatar(), userInput.getUserDescription(), userInput.getNickname(),
-                userInput.getEmail(), userInput.getPhoneNumber());
+        User user = Utils.createUser(userInput);
         UUID uuid = userService.updateUser(UUID.fromString(id), user, userInput.getHardSkills());
         return ResponseEntity.ok(SuccessResponse.of(uuid.toString()));
     }

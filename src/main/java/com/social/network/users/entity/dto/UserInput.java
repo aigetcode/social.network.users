@@ -27,7 +27,7 @@ public class UserInput {
     @NotEmpty
     private String sex; // UserSex
     private Date birthdate;
-    private String country;
+    private Long country;
     private String avatar;
     @Size(max = 1000)
     private String userDescription;

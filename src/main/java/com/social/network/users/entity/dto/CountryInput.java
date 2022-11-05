@@ -11,7 +11,7 @@ import javax.validation.constraints.NotEmpty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CountryInput {
 
-    private String id;
+    private Long id;
     @NotEmpty
     private String name;
     private String region;

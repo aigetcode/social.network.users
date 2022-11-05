@@ -17,14 +17,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 
 @Slf4j
 @Service
-public record UserService(UserRepository userRepository,
-                          HardSkillRepository hardSkillService,
-                          CountryService countryService) {
+@Transactional
+public class UserService {
+
+    private final UserRepository userRepository;
+    private final HardSkillRepository hardSkillService;
+    private final CountryService countryService;
+
+    public UserService(UserRepository userRepository,
+                       HardSkillRepository hardSkillService,
+                       CountryService countryService) {
+        this.userRepository = userRepository;
+        this.hardSkillService = hardSkillService;
+        this.countryService = countryService;
+    }
 
     public Page<UserEntry> getPageUsers(int pageIndex, int pageSize, String countryName) {
         log.info(String.format("Get page users page: %s, size: %s", pageIndex, pageSize));
@@ -110,8 +122,8 @@ public record UserService(UserRepository userRepository,
                 .map(skill -> {
                     HardSkill hardSkill = hardSkillService.findByName(skill);
                     if (hardSkill == null) {
-                        HardSkill hardSkill1 = new HardSkill(skill);
-                        hardSkill = hardSkillService.save(hardSkill1);
+                        HardSkill hs = new HardSkill(skill);
+                        hardSkill = hardSkillService.save(hs);
                     }
                     return hardSkill;
                 }).toList();

@@ -7,8 +7,6 @@ import lombok.Getter;
 @Getter
 public class ExceptionResponse<T> {
 
-    public static final String ERROR_FIELD = "error";
-
     private final Boolean success;
     private final T error;
 

@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+//todo: add field isDeleted
+
 @Entity
 @Table(name="users")
 @Getter
@@ -54,7 +56,7 @@ public class User extends BaseEntity {
     @Column(name = "nickname", length = 50, unique = true)
     private String nickname;
 
-    @Column(name = "email", length = 100)
+    @Column(name = "email", length = 100, unique = true)
     private String email;
 
     @Column(name = "phone_number", length = 30)

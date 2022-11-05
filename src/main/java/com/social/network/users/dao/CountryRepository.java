@@ -7,10 +7,9 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.UUID;
 
 @Repository
-public interface CountryRepository extends PagingAndSortingRepository<Country, UUID> {
+public interface CountryRepository extends PagingAndSortingRepository<Country, Long> {
 
     @Query("SELECT c FROM Country c WHERE LOWER(c.name) LIKE %:name% ORDER BY c.name ASC")
     List<Country> searchByNameLike(String name, Pageable pageable);

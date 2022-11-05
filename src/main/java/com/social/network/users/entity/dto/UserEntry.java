@@ -32,6 +32,9 @@ public class UserEntry {
     private List<FollowerEntry> followers;
 
     public static List<UserEntry> fromListUsers(List<User> users) {
+        if (users.isEmpty())
+            return Collections.emptyList();
+
         return users.stream()
                 .map(UserEntry::fromUser)
                 .toList();
@@ -51,7 +54,10 @@ public class UserEntry {
         userEntry.setName(user.getName());
         userEntry.setSurname(user.getSurname());
         userEntry.setLastName(user.getLastName());
-        userEntry.setSex(user.getSex().toString());
+
+        if (user.getSex() != null)
+            userEntry.setSex(user.getSex().toString());
+
         userEntry.setBirthdate(user.getBirthdate());
         userEntry.setCountry(user.getCountry());
         userEntry.setAvatar(user.getAvatar());

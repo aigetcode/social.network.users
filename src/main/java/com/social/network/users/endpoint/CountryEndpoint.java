@@ -18,7 +18,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.List;
-import java.util.UUID;
 
 @Validated
 @RestController
@@ -32,9 +31,9 @@ public class CountryEndpoint {
     }
 
     @PostMapping
-    public ResponseEntity<SuccessResponse<UUID>> saveCountry(@Valid @RequestBody CountryInput countryInput) {
+    public ResponseEntity<SuccessResponse<Long>> saveCountry(@Valid @RequestBody CountryInput countryInput) {
         Country country = new Country(countryInput.getName(), countryInput.getRegion(), countryInput.getSubregion());
-        UUID countryId = countryService.saveCountry(country);
+        Long countryId = countryService.saveCountry(country);
         return ResponseEntity.ok(SuccessResponse.of(countryId));
     }
 
@@ -47,8 +46,8 @@ public class CountryEndpoint {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SuccessResponse<Country>> getCountryById(@PathVariable String id) {
-        Country country = countryService.getCountryById(UUID.fromString(id));
+    public ResponseEntity<SuccessResponse<Country>> getCountryById(@PathVariable Long id) {
+        Country country = countryService.getCountryById(id);
         return ResponseEntity.ok(SuccessResponse.of(country));
     }
 

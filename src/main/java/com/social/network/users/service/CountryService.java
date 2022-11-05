@@ -7,13 +7,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
 import java.util.List;
-import java.util.UUID;
 
 @Service
-public record CountryService(CountryRepository countryRepository) {
+@Transactional
+public class CountryService {
 
-    public UUID saveCountry(Country country) {
+    private final CountryRepository countryRepository;
+
+    public CountryService(CountryRepository countryRepository) {
+        this.countryRepository = countryRepository;
+    }
+
+    public Long saveCountry(Country country) {
         return countryRepository.save(country).getId();
     }
 
@@ -22,7 +29,7 @@ public record CountryService(CountryRepository countryRepository) {
         return countryRepository.searchByNameLike(countryName.toLowerCase(), pageable);
     }
 
-    public Country getCountryById(UUID countryId) {
+    public Country getCountryById(Long countryId) {
         return countryRepository.findById(countryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Country not found"));
     }

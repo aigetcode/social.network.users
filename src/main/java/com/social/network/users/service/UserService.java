@@ -9,6 +9,8 @@ import com.social.network.users.entity.dto.UserEntry;
 import com.social.network.users.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
@@ -29,6 +33,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final HardSkillRepository hardSkillService;
     private final CountryService countryService;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public UserService(UserRepository userRepository,
                        HardSkillRepository hardSkillService,
@@ -52,9 +59,15 @@ public class UserService {
         return new PageImpl<>(UserEntry.fromListUsers(users.getContent()), pageable, users.getTotalElements());
     }
 
-    public List<UserEntry> getAllUsers() {
-        log.info("Get all users page");
-        return UserEntry.fromListUsers(userRepository.findAll());
+    public List<UserEntry> getAllUsers(boolean isDeleted) {
+        log.info(String.format("Get all users page isDeleted[%s]", isDeleted));
+
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedProductFilter");
+        filter.setParameter("isDeleted", isDeleted);
+        List<User> users = userRepository.findAll();
+        session.disableFilter("deletedProductFilter");
+        return UserEntry.fromListUsers(users);
     }
 
     public UserEntry getUserById(UUID userId) {

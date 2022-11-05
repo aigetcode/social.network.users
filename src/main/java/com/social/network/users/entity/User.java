@@ -2,6 +2,10 @@ package com.social.network.users.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,12 +23,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-//todo: add field isDeleted
-
-@Entity
-@Table(name="users")
 @Getter
 @Setter
+@Entity
+@Table(name="users")
+@SQLDelete(sql = "UPDATE table_product SET deleted = true WHERE id=?")
+@FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
+@Filter(name = "deletedProductFilter", condition = "deleted = :isDeleted")
 public class User extends BaseEntity {
 
     @Column(name = "name", length = 50, nullable = false)
@@ -73,6 +78,8 @@ public class User extends BaseEntity {
             joinColumns = {@JoinColumn(name = "user_id", nullable = false)},
             inverseJoinColumns = {@JoinColumn(name = "hard_skill_id", nullable = false)})
     private List<HardSkill> hardSkills = new ArrayList<>();
+
+    private boolean deleted = Boolean.FALSE;
 
     public User() {
     }

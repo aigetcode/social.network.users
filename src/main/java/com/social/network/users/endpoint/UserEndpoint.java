@@ -1,9 +1,7 @@
 package com.social.network.users.endpoint;
 
 import com.social.network.users.endpoint.mvc.SuccessResponse;
-import com.social.network.users.entity.Country;
 import com.social.network.users.entity.User;
-import com.social.network.users.entity.UserSex;
 import com.social.network.users.entity.dto.UserEntry;
 import com.social.network.users.entity.dto.UserInput;
 import com.social.network.users.service.UserService;
@@ -48,7 +46,7 @@ public class UserEndpoint {
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllUsers() {
-        List<UserEntry> users = userService.getAllUsers();
+        List<UserEntry> users = userService.getAllUsers(false);
         return ResponseEntity.ok(SuccessResponse.of(users));
     }
 

@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -45,9 +46,9 @@ public class UserService {
         this.countryService = countryService;
     }
 
-    public Page<UserEntry> getPageUsers(int pageIndex, int pageSize, String countryName) {
+    public Page<UserEntry> getPageUsers(int pageIndex, int pageSize, String countryName, Sort sort) {
         log.info(String.format("Get page users page: %s, size: %s", pageIndex, pageSize));
-        Pageable pageable = PageRequest.of(pageIndex, pageSize);
+        Pageable pageable = PageRequest.of(pageIndex, pageSize, sort);
 
         Page<User> users;
         if (Strings.isNotBlank(countryName)) {
@@ -56,6 +57,14 @@ public class UserService {
         }
 
         users = userRepository.findAll(pageable);
+        return new PageImpl<>(UserEntry.fromListUsers(users.getContent()), pageable, users.getTotalElements());
+    }
+
+    public Page<UserEntry> getFollowersByUserId(int pageIndex, int pageSize, UUID userId, Sort sort) {
+        log.info(String.format("Get page followers by userId[%s] page: %s, size: %s", userId, pageIndex, pageSize));
+
+        Pageable pageable = PageRequest.of(pageIndex, pageSize, sort);
+        Page<User> users = userRepository.getFollowers(userId, pageable);
         return new PageImpl<>(UserEntry.fromListUsers(users.getContent()), pageable, users.getTotalElements());
     }
 

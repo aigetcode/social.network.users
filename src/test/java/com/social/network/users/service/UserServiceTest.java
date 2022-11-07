@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -61,7 +62,8 @@ class UserServiceTest {
         when(userRepository.findAll(pageable))
                 .thenReturn(new PageImpl<>(users, pageable, users.size()));
 
-        Page<UserEntry> userEntries = userService.getPageUsers(pageIndex, pageSize, null);
+        Page<UserEntry> userEntries = userService.getPageUsers(pageIndex, pageSize,
+                null, Sort.by("name").and(Sort.by("surname")));
         assertEquals(2L, userEntries.getTotalElements());
     }
 

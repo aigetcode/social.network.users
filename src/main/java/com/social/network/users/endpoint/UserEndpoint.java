@@ -2,6 +2,7 @@ package com.social.network.users.endpoint;
 
 import com.social.network.users.endpoint.mvc.SuccessResponse;
 import com.social.network.users.entity.User;
+import com.social.network.users.entity.dto.SortDto;
 import com.social.network.users.entity.dto.UserEntry;
 import com.social.network.users.entity.dto.UserInput;
 import com.social.network.users.service.UserService;
@@ -39,8 +40,21 @@ public class UserEndpoint {
     @GetMapping
     public ResponseEntity<?> getPageUsers(@RequestParam(value = "pageIndex") int pageIndex,
                                           @RequestParam(value = "pageSize") int pageSize,
-                                          @RequestParam(value = "country") String country) {
-        Page<UserEntry> users = userService.getPageUsers(pageIndex, pageSize, country);
+                                          @RequestParam(value = "country", required = false) String country,
+                                          @RequestParam(value = "sorting", defaultValue = "id,desc",
+                                                  required = false) String[] sortEntries) {
+        Page<UserEntry> users = userService.getPageUsers(pageIndex, pageSize, country, SortDto.toSort(sortEntries));
+        return ResponseEntity.ok(SuccessResponse.of(users));
+    }
+
+    @GetMapping("{id}/followers")
+    public ResponseEntity<?> getPageFollowersByUserId(@PathVariable(value = "id") String userId,
+                                                       @RequestParam(value = "pageIndex") int pageIndex,
+                                                       @RequestParam(value = "pageSize") int pageSize,
+                                                       @RequestParam(value = "sorting", defaultValue = "id,desc",
+                                                               required = false) String[] sortEntries) {
+        Page<UserEntry> users = userService.getFollowersByUserId(pageIndex, pageSize,
+                UUID.fromString(userId), SortDto.toSort(sortEntries));
         return ResponseEntity.ok(SuccessResponse.of(users));
     }
 
@@ -76,21 +90,21 @@ public class UserEndpoint {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable String id) {
         userService.deleteUser(UUID.fromString(id));
-        return ResponseEntity.ok(SuccessResponse.of(null));
+        return ResponseEntity.ok(SuccessResponse.ok());
     }
 
     @PostMapping("/{followerId}/subscribe/{userId}")
     public ResponseEntity<?> subscribe(@PathVariable String userId,
                                        @PathVariable String followerId) {
         userService.subscribe(UUID.fromString(userId), UUID.fromString(followerId));
-        return ResponseEntity.ok(SuccessResponse.of(null));
+        return ResponseEntity.ok(SuccessResponse.ok());
     }
 
     @PostMapping("/{followerId}/unsubscribe/{userId}")
     public ResponseEntity<?> unsubscribe(@PathVariable String userId,
                                          @PathVariable String followerId) {
         userService.unsubscribe(UUID.fromString(userId), UUID.fromString(followerId));
-        return ResponseEntity.ok(SuccessResponse.of(null));
+        return ResponseEntity.ok(SuccessResponse.ok());
     }
 
 }

@@ -1,5 +1,6 @@
 package com.social.network.users.entity.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.social.network.users.entity.Country;
 import com.social.network.users.entity.HardSkill;
 import com.social.network.users.entity.User;
@@ -29,7 +30,9 @@ public class UserEntry {
     private String phoneNumber;
 
     private List<HardSkillEntry> hardSkills;
-    private List<FollowerEntry> followers;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private List<UserEntry> followers;
 
     public static List<UserEntry> fromListUsers(List<User> users) {
         if (users.isEmpty())
@@ -67,7 +70,6 @@ public class UserEntry {
         userEntry.setPhoneNumber(user.getPhoneNumber());
 
         setHardSkills(user.getHardSkills(), userEntry);
-        setFollowers(user.getFollowers(), userEntry);
 
         return userEntry;
     }
@@ -80,21 +82,6 @@ public class UserEntry {
             userEntry.setHardSkills(hardSkillEntries);
         } else {
             userEntry.setHardSkills(Collections.emptyList());
-        }
-    }
-
-    private static void setFollowers(List<User> followers, UserEntry userEntry) {
-        if (!followers.isEmpty()) {
-            List<FollowerEntry> followerEntries = followers.stream().map(follower -> {
-                FollowerEntry followerEntry = new FollowerEntry();
-                followerEntry.setId(follower.getId().toString());
-                followerEntry.setName(follower.getName());
-                followerEntry.setSurname(follower.getSurname());
-                return followerEntry;
-            }).toList();
-            userEntry.setFollowers(followerEntries);
-        } else {
-            userEntry.setFollowers(Collections.emptyList());
         }
     }
 

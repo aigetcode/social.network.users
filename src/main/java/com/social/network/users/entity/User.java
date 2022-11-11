@@ -33,7 +33,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name="users")
-@SQLDelete(sql = "UPDATE table_product SET deleted = true WHERE id=?")
+@SQLDelete(sql = "UPDATE users SET deleted = true WHERE id=?")
 @FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
 @Filter(name = "deletedProductFilter", condition = "deleted = :isDeleted")
 public class User {
@@ -102,7 +102,7 @@ public class User {
 
     public User(Integer version, String name, String surname, String lastName, UserSex sex, Date birthdate, Country country,
                 String avatar, String userDescription, String nickname, String email, String phoneNumber) {
-        this.setVersion(version);
+        this.version = version;
         this.name = name;
         this.surname = surname;
         this.lastName = lastName;

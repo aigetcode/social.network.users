@@ -33,7 +33,7 @@ public class Country {
     @Column(name = "version", nullable = false)
     private Integer version;
 
-    @Column(name = "name", length = 100, unique = true)
+    @Column(name = "name", length = 100, unique = true, nullable = false)
     private String name;
 
     @Column(name = "region")

@@ -1,9 +1,13 @@
 package com.social.network.users.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
 
@@ -32,14 +36,21 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name="users")
+@Builder
+@AllArgsConstructor
+@Table(name="USERS")
 @SQLDelete(sql = "UPDATE users SET deleted = true WHERE id=?")
 @FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
 @Filter(name = "deletedProductFilter", condition = "deleted = :isDeleted")
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @ColumnDefault("random_uuid()")
     @Column(name = "id", nullable = false)
     @Access(AccessType.PROPERTY)
     private UUID id;
@@ -83,18 +94,21 @@ public class User {
     @Column(name = "phone_number", length = 30)
     private String phoneNumber;
 
+    @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_followers",
             joinColumns = {@JoinColumn(name = "user_id", nullable = false)},
             inverseJoinColumns = {@JoinColumn(name = "follower_id", nullable = false)})
     private List<User> followers = new ArrayList<>();
 
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_hard_skills",
             joinColumns = {@JoinColumn(name = "user_id", nullable = false)},
             inverseJoinColumns = {@JoinColumn(name = "hard_skill_id", nullable = false)})
     private List<HardSkill> hardSkills = new ArrayList<>();
 
+    @Builder.Default
     private boolean deleted = Boolean.FALSE;
 
     public User() {

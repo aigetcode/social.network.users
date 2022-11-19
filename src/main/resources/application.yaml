@@ -11,6 +11,11 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  liquibase:
+    enabled: true
+    drop-first: false
+    change-log: classpath:db/master.xml
+    default-schema: public
 
 springdoc:
   api-docs:

@@ -8,6 +8,11 @@ spring:
     password:
     driverClassName: org.h2.Driver
   jpa:
-    spring.jpa.database-platform: "org.hibernate.dialect.H2Dialect"
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
+    show-sql: true
+  liquibase:
+    enabled: true
+    drop-first: true
+    change-log: classpath:db/master.xml
+    default-schema: public

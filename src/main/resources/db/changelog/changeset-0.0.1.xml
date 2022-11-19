@@ -1,0 +1,1619 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="2022-11-14 Create tables" author="Ivanitskiy Alexey" context="dev,prod" dbms="postgresql">
+        <sql>CREATE EXTENSION IF NOT EXISTS "uuid-ossp";</sql>
+    </changeSet>
+
+    <changeSet id="2022-11-14 Create tables" author="Ivanitskiy Alexey" context="dev,prod" dbms="postgresql,h2">
+        <createTable tableName="COUNTRY" remarks="Country information">
+            <column name="id" remarks="Entity ID" type="java.sql.Types.BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_country_property"/>
+            </column>
+            <column name="version" remarks="Entity version" type="java.sql.Types.INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" remarks="Name" type="${string.type}(100 ${string.unit})">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="region" remarks="Region" type="${string.type}(255 ${string.unit})"/>
+            <column name="subregion" remarks="Subregion" type="${string.type}(255 ${string.unit})"/>
+        </createTable>
+
+        <createTable tableName="HARD_SKILLS" remarks="Hard skill information">
+            <column name="id" remarks="Entity ID" type="java.sql.Types.BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_hard_skill_property"/>
+            </column>
+            <column name="version" remarks="Entity version" type="java.sql.Types.INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" remarks="Name" type="${string.type}(255 ${string.unit})">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="USERS" remarks="Users information">
+            <column name="id" remarks="Entity ID" type="${uuid_type}" defaultValueComputed="${uuid_function}">
+                <constraints primaryKey="true" primaryKeyName="pk_users_property"/>
+            </column>
+            <column name="version" remarks="Entity version" type="java.sql.Types.INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" remarks="Name" type="${string.type}(50 ${string.unit})">
+                <constraints nullable="false"/>
+            </column>
+            <column name="surname" remarks="Surname" type="${string.type}(50 ${string.unit})">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" remarks="Last name" type="${string.type}(50 ${string.unit})"/>
+            <column name="birthdate" remarks="Birthdate user" type="${timestamp.type}"/>
+            <column name="email" remarks="User email" type="${string.type}(100 ${string.unit})"/>
+            <column name="avatar" remarks="Avatar" type="${string.type}(500 ${string.unit})"/>
+            <column name="nickname" remarks="Nickname" type="${string.type}(50 ${string.unit})">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="phone_number" remarks="User phone" type="${string.type}(30 ${string.unit})"/>
+            <column name="sex" remarks="User sex" type="${string.type}(10 ${string.unit})" defaultValue="MALE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_description" remarks="Description about user"
+                    type="${string.type}(1000 ${string.unit})"/>
+            <column name="country_id" remarks="Country user" type="java.sql.Types.BIGINT">
+                <constraints nullable="true"
+                             foreignKeyName="fk_users_country_id"
+                             referencedTableName="COUNTRY" referencedColumnNames="id"/>
+            </column>
+            <column name="deleted" remarks="Entity is deleted"
+                    type="java.sql.Types.BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="USER_FOLLOWERS" remarks="User followers">
+            <column name="user_id" remarks="User ID" type="${uuid_type}">
+                <constraints nullable="false"
+                             foreignKeyName="fk_users_followers_user_id"
+                             referencedTableName="USERS" referencedColumnNames="id"/>
+            </column>
+            <column name="follower_id" remarks="User ID" type="${uuid_type}">
+                <constraints nullable="false"
+                             foreignKeyName="fk_users_followers_follower_id"
+                             referencedTableName="USERS" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey
+                columnNames="user_id, follower_id"
+                constraintName="pk_user_followers"
+                schemaName="public"
+                tableName="USER_FOLLOWERS"/>
+
+        <createTable tableName="USER_HARD_SKILLS" remarks="User hard skills">
+            <column name="user_id" remarks="User ID" type="${uuid_type}">
+                <constraints nullable="false"
+                             foreignKeyName="fk_skills_user_id"
+                             referencedTableName="USERS" referencedColumnNames="id"/>
+            </column>
+            <column name="hard_skill_id" remarks="Hard skill ID" type="java.sql.Types.BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="fk_skills_hard_skill_id"
+                             referencedTableName="HARD_SKILLS" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2022-11-14 Add countries" author="Ivanitskiy Alexey" context="dev,prod" dbms="postgresql,h2">
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Afghanistan"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Southern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Aland Islands"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Albania"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Algeria"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Northern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="American Samoa"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Polynesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Andorra"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Angola"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Middle Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Anguilla"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Antarctica"/>
+            <column name="region" value="Polar"/>
+            <column name="subregion" value=""/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Antigua And Barbuda"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Argentina"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="South America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Armenia"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Aruba"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Australia"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Australia and New Zealand"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Austria"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Western Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Azerbaijan"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="The Bahamas"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Bahrain"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Bangladesh"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Southern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Barbados"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Belarus"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Eastern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Belgium"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Western Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Belize"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Central America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Benin"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Bermuda"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Northern America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Bhutan"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Southern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Bolivia"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="South America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Bosnia and Herzegovina"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Botswana"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Southern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Bouvet Island"/>
+            <column name="region" value=""/>
+            <column name="subregion" value=""/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Brazil"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="South America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="British Indian Ocean Territory"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Brunei"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="South-Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Bulgaria"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Eastern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Burkina Faso"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Burundi"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Cambodia"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="South-Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Cameroon"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Middle Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Canada"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Northern America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Cape Verde"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Cayman Islands"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Central African Republic"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Middle Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Chad"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Middle Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Chile"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="South America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="China"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Christmas Island"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Australia and New Zealand"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Cocos (Keeling) Islands"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Australia and New Zealand"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Colombia"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="South America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Comoros"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Congo"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Middle Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Democratic Republic of the Congo"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Middle Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Cook Islands"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Polynesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Costa Rica"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Central America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Ivory Coast"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Croatia"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Cuba"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Cyprus"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Czech Republic"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Eastern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Denmark"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Djibouti"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Dominica"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Dominican Republic"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="East Timor"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="South-Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Ecuador"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="South America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Egypt"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Northern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="El Salvador"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Central America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Equatorial Guinea"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Middle Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Eritrea"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Estonia"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Ethiopia"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Falkland Islands"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="South America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Faroe Islands"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Fiji Islands"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Melanesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Finland"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="France"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Western Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="French Guiana"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="South America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="French Polynesia"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Polynesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="French Southern Territories"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Southern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Gabon"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Middle Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Gambia The"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Georgia"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Germany"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Western Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Ghana"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Gibraltar"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Greece"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Greenland"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Northern America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Grenada"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Guadeloupe"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Guam"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Micronesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Guatemala"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Central America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Guernsey and Alderney"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Guinea"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Guinea-Bissau"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Guyana"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="South America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Haiti"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Heard Island and McDonald Islands"/>
+            <column name="region" value=""/>
+            <column name="subregion" value=""/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Honduras"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Central America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Hong Kong S.A.R."/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Hungary"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Eastern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Iceland"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="India"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Southern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Indonesia"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="South-Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Iran"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Southern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Iraq"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Ireland"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Israel"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Italy"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Jamaica"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Japan"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Jersey"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Jordan"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Kazakhstan"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Central Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Kenya"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Kiribati"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Micronesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="North Korea"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="South Korea"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Kuwait"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Kyrgyzstan"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Central Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Laos"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="South-Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Latvia"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Lebanon"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Lesotho"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Southern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Liberia"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Libya"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Northern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Liechtenstein"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Western Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Lithuania"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Luxembourg"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Western Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Macau S.A.R."/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Macedonia"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Madagascar"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Malawi"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Malaysia"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="South-Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Maldives"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Southern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Mali"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Malta"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Man (Isle of)"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Marshall Islands"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Micronesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Martinique"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Mauritania"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Mauritius"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Mayotte"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Mexico"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Central America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Micronesia"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Micronesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Moldova"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Eastern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Monaco"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Western Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Mongolia"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Montenegro"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Montserrat"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Morocco"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Northern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Mozambique"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Myanmar"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="South-Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Namibia"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Southern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Nauru"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Micronesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Nepal"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Southern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Bonaire, Sint Eustatius and Saba"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Netherlands"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Western Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="New Caledonia"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Melanesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="New Zealand"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Australia and New Zealand"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Nicaragua"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Central America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Niger"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Nigeria"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Niue"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Polynesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Norfolk Island"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Australia and New Zealand"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Northern Mariana Islands"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Micronesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Norway"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Oman"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Pakistan"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Southern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Palau"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Micronesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Palestinian Territory Occupied"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Panama"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Central America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Papua new Guinea"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Melanesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Paraguay"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="South America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Peru"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="South America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Philippines"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="South-Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Pitcairn Island"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Polynesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Poland"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Eastern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Portugal"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Puerto Rico"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Qatar"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Reunion"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Romania"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Eastern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Russia"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Eastern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Rwanda"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Saint Helena"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Saint Kitts And Nevis"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Saint Lucia"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Saint Pierre and Miquelon"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Northern America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Saint Vincent And The Grenadines"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Saint-Barthelemy"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Saint-Martin (French part)"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Samoa"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Polynesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="San Marino"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Sao Tome and Principe"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Middle Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Saudi Arabia"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Senegal"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Serbia"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Seychelles"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Sierra Leone"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Singapore"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="South-Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Slovakia"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Eastern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Slovenia"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Solomon Islands"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Melanesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Somalia"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="South Africa"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Southern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="South Georgia"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="South America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="South Sudan"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Middle Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Spain"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Sri Lanka"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Southern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Sudan"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Northern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Suriname"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="South America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Svalbard And Jan Mayen Islands"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Swaziland"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Southern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Sweden"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Switzerland"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Western Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Syria"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Taiwan"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Tajikistan"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Central Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Tanzania"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Thailand"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="South-Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Togo"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Western Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Tokelau"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Polynesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Tonga"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Polynesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Trinidad And Tobago"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Tunisia"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Northern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Turkey"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Turkmenistan"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Central Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Turks And Caicos Islands"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Tuvalu"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Polynesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Uganda"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Ukraine"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Eastern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="United Arab Emirates"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="United Kingdom"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Northern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="United States"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Northern America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="United States Minor Outlying Islands"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Northern America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Uruguay"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="South America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Uzbekistan"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Central Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Vanuatu"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Melanesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Vatican City State (Holy See)"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Southern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Venezuela"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="South America"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Vietnam"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="South-Eastern Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Virgin Islands (British)"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Virgin Islands (US)"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Wallis And Futuna Islands"/>
+            <column name="region" value="Oceania"/>
+            <column name="subregion" value="Polynesia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Western Sahara"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Northern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Yemen"/>
+            <column name="region" value="Asia"/>
+            <column name="subregion" value="Western Asia"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Zambia"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Zimbabwe"/>
+            <column name="region" value="Africa"/>
+            <column name="subregion" value="Eastern Africa"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Kosovo"/>
+            <column name="region" value="Europe"/>
+            <column name="subregion" value="Eastern Europe"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Curaçao"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+        <insert tableName="COUNTRY">
+            <column name="version" valueNumeric="1"/>
+            <column name="name" value="Sint Maarten (Dutch part)"/>
+            <column name="region" value="Americas"/>
+            <column name="subregion" value="Caribbean"/>
+        </insert>
+
+        <rollback>
+            <sql>delete from country</sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

@@ -6,6 +6,7 @@ import com.social.network.users.entity.Country;
 import com.social.network.users.entity.HardSkill;
 import com.social.network.users.entity.User;
 import com.social.network.users.entity.dto.UserEntry;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,7 +30,10 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -49,18 +53,22 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    @BeforeEach
+    void init() {
+        Country country = new Country("123", "123", "123");
+        lenient().doReturn(country).when(countryService).getCountryById(any());
+    }
+
     @Test
-    void getPageUsers_testPassed() {
+    void getPageUsers_passed() {
         int pageIndex = 0;
         int pageSize = 10;
-        Pageable pageable = PageRequest.of(pageIndex, pageSize);
+        Pageable pageable = PageRequest.of(pageIndex, pageSize,
+                Sort.by("name").and(Sort.by("surname")));
+        List<User> users = Arrays.asList(new User(), new User());
 
-        List<User> users = new ArrayList<>();
-        users.add(new User());
-        users.add(new User());
-
-        when(userRepository.findAll(pageable))
-                .thenReturn(new PageImpl<>(users, pageable, users.size()));
+        doReturn(new PageImpl<>(users, pageable, users.size()))
+                .when(userRepository).findAll((Pageable) any());
 
         Page<UserEntry> userEntries = userService.getPageUsers(pageIndex, pageSize,
                 null, Sort.by("name").and(Sort.by("surname")));
@@ -68,41 +76,58 @@ class UserServiceTest {
     }
 
     @Test
-    void getAllUsers_testPassed() {
-        List<User> users = new ArrayList<>();
-        users.add(new User());
-        users.add(new User());
+    void getPageUsersWithCountry_passed() {
+        int pageIndex = 0;
+        int pageSize = 10;
+        String country = "123";
+        Pageable pageable = PageRequest.of(pageIndex, pageSize,
+                Sort.by("name").and(Sort.by("surname")));
+        List<User> users = Arrays.asList(new User(), new User());
 
-        when(userRepository.findAll()).thenReturn(users);
+        doReturn(new PageImpl<>(users, pageable, users.size()))
+                .when(userRepository).findAllByCountry_Name(any(), eq(country));
 
-        List<UserEntry> userEntries = userService.getAllUsers(false);
-        assertEquals(2L, userEntries.size());
+        Page<UserEntry> userEntries = userService.getPageUsers(pageIndex, pageSize,
+                country, Sort.by("name").and(Sort.by("surname")));
+        assertEquals(2L, userEntries.getTotalElements());
     }
 
     @Test
-    void getUserById_testPassed() {
+    void getAllUsers_passed() {
+        List<User> users = Arrays.asList(new User(), new User());
+
+        doReturn(users).when(userRepository).findAll();
+
+        List<User> userEntries = userRepository.findAll();
+        assertEquals(users, userEntries);
+    }
+
+    @Test
+    void getUserById_passed() {
         UUID uuid = UUID.randomUUID();
         User user = new User();
         user.setId(uuid);
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+
+        doReturn(Optional.of(user)).when(userRepository).findById(any());
 
         UserEntry userEntry = userService.getUserById(uuid);
         assertEquals(uuid.toString(), userEntry.getId());
     }
 
     @Test
-    void getUserById_testException() {
+    void getUserById_exception() {
         UUID uuid = UUID.randomUUID();
         User user = new User();
         user.setId(uuid);
-        when(userRepository.findById(any())).thenReturn(Optional.empty());
+
+        doReturn(Optional.empty()).when(userRepository).findById(any());
 
         assertThrows(ResponseStatusException.class,
                 () -> userService.getUserById(uuid));
     }
 
     @Test
-    void createUser_testException() {
+    void createUser_exception() {
         User user = createMockUser();
         user.setEmail("asdasd");
 
@@ -114,7 +139,7 @@ class UserServiceTest {
     }
 
     @Test
-    void createUser_testPassed() {
+    void createUser_passed() {
         HardSkill hardSkill = new HardSkill(JAVA_SKILL);
         HardSkill hardSkill1 = new HardSkill(SPRING_SKILL);
 
@@ -122,23 +147,23 @@ class UserServiceTest {
         user.setHardSkills(Arrays.asList(hardSkill, hardSkill1));
         List<String> hardSkillsInput = createMockHardSkills();
 
-        when(userRepository.save(any())).thenReturn(user);
-        when(hardSkillService.findByName(JAVA_SKILL)).thenReturn(hardSkill);
-        when(hardSkillService.findByName(SPRING_SKILL)).thenReturn(null);
-        when(hardSkillService.save(any())).thenReturn(hardSkill1);
+        doReturn(user).when(userRepository).save(any());
+        doReturn(hardSkill).when(hardSkillService).findByName(JAVA_SKILL);
+        doReturn(null).when(hardSkillService).findByName(SPRING_SKILL);
+        doReturn(null).when(hardSkillService).save(any());
 
         assertEquals(user.getId(), userService.createUser(user, hardSkillsInput));
     }
 
     @Test
-    void updateUser_testException() {
+    void updateUser_exception() {
         User user = createMockUser();
         user.setEmail("asdasd");
 
         UUID uuid = UUID.randomUUID();
         List<String> hardSkillsInput = Collections.emptyList();
 
-        when(userRepository.existsById(any())).thenReturn(false);
+        doReturn(false).when(userRepository).existsById(any());
 
         assertThrows(IllegalArgumentException.class,
                 () -> userService.updateUser(uuid, null, hardSkillsInput));
@@ -149,7 +174,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updateUser_testPassed() {
+    void updateUser_passed() {
         HardSkill hardSkill = new HardSkill(JAVA_SKILL);
         HardSkill hardSkill1 = new HardSkill(SPRING_SKILL);
 
@@ -158,13 +183,65 @@ class UserServiceTest {
         user.setHardSkills(Arrays.asList(hardSkill, hardSkill1));
         List<String> hardSkillsInput = createMockHardSkills();
 
-        when(userRepository.existsById(any())).thenReturn(true);
-        when(userRepository.save(any())).thenReturn(user);
-        when(hardSkillService.findByName(JAVA_SKILL)).thenReturn(hardSkill);
-        when(hardSkillService.findByName(SPRING_SKILL)).thenReturn(null);
-        when(hardSkillService.save(any())).thenReturn(hardSkill1);
+        doReturn(true).when(userRepository).existsById(any());
+        doReturn(user).when(userRepository).save(any());
+        doReturn(hardSkill).when(hardSkillService).findByName(JAVA_SKILL);
+        doReturn(null).when(hardSkillService).findByName(SPRING_SKILL);
+        doReturn(hardSkill1).when(hardSkillService).save(any());
 
         assertEquals(user.getId(), userService.updateUser(uuid, user, hardSkillsInput));
+    }
+
+    @Test
+    void getFollowersByUserId_passed() {
+        int pageIndex = 0;
+        int pageSize = 10;
+        Pageable pageable = PageRequest.of(pageIndex, pageSize,
+                Sort.by("name").and(Sort.by("surname")));
+        List<User> users = Arrays.asList(new User(), new User());
+
+        doReturn(new PageImpl<>(users, pageable, users.size()))
+                .when(userRepository).getFollowers(any(), any());
+
+        Page<UserEntry> userEntries = userService.getFollowersByUserId(pageIndex, pageSize,
+                null, Sort.by("name").and(Sort.by("surname")));
+        assertEquals(2L, userEntries.getTotalElements());
+    }
+
+    @Test
+    void subscribe_passed() {
+        UUID userId1 = UUID.randomUUID();
+        UUID userId2 = UUID.randomUUID();
+
+        User user1 = new User();
+        user1.setId(userId1);
+        User user2 = new User();
+        user2.setId(userId2);
+
+        doReturn(Optional.of(user1)).when(userRepository).findById(userId1);
+        doReturn(Optional.of(user2)).when(userRepository).findById(userId2);
+        doReturn(user1).when(userRepository).save(any());
+
+        userService.unsubscribe(userId1, userId2);
+        verify(userRepository).save(any());
+    }
+
+    @Test
+    void unsubscribe_passed() {
+        UUID userId1 = UUID.randomUUID();
+        UUID userId2 = UUID.randomUUID();
+
+        User user1 = new User();
+        user1.setId(userId1);
+        User user2 = new User();
+        user2.setId(userId2);
+
+        doReturn(Optional.of(user1)).when(userRepository).findById(userId1);
+        doReturn(Optional.of(user2)).when(userRepository).findById(userId2);
+        doReturn(user1).when(userRepository).save(any());
+
+        userService.subscribe(userId1, userId2);
+        verify(userRepository).save(any());
     }
 
     private User createMockUser() {

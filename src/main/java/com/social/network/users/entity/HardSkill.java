@@ -16,7 +16,7 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 @Entity
-@Table(name = "hard_skills")
+@Table(name = "HARD_SKILLS")
 @Getter
 @Setter
 @AllArgsConstructor

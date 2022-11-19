@@ -29,15 +29,17 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:${springVersion}")
     implementation("org.springdoc:springdoc-openapi-ui:${openApiVersion}")
     implementation("commons-validator:commons-validator:1.7")
-    compileOnly("org.projectlombok:lombok:${lombokVersion}")
-    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
-    testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
-    testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+    implementation("org.liquibase:liquibase-core:4.17.2")
     runtimeOnly("org.springframework.boot:spring-boot-devtools:${springVersion}")
     runtimeOnly("org.postgresql:postgresql:${postgresqlVersion}")
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springVersion}")
     testImplementation("org.mockito:mockito-inline:4.8.0")
     testImplementation("com.h2database:h2:${h2Version}")
+
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+    testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
+    testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
 }
 
 publishing {
@@ -48,4 +50,8 @@ publishing {
 
 tasks.withType<JavaCompile>() {
     options.encoding = "UTF-8"
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

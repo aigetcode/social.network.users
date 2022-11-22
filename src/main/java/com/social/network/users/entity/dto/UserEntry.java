@@ -4,15 +4,22 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.social.network.users.entity.Country;
 import com.social.network.users.entity.HardSkill;
 import com.social.network.users.entity.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserEntry {
 
     private String id;
@@ -29,7 +36,8 @@ public class UserEntry {
     private String email;
     private String phoneNumber;
 
-    private List<HardSkillEntry> hardSkills;
+    @Builder.Default
+    private List<HardSkillEntry> hardSkills = new ArrayList<>();
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<UserEntry> followers;

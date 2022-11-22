@@ -2,10 +2,10 @@ package com.social.network.users.service;
 
 import com.social.network.users.dao.CountryRepository;
 import com.social.network.users.entity.Country;
+import com.social.network.users.exceptions.NotFoundException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -31,7 +31,7 @@ public class CountryService {
 
     public Country getCountryById(Long countryId) {
         return countryRepository.findById(countryId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Country not found"));
+                .orElseThrow(() -> new NotFoundException(HttpStatus.NOT_FOUND, "Country not found"));
     }
 
 }

@@ -6,7 +6,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="2022-11-14 Create tables" author="Ivanitskiy Alexey" context="dev,prod" dbms="postgresql">
+    <changeSet id="2022-11-14 Create uuid generator" author="Ivanitskiy Alexey" context="dev,prod" dbms="postgresql">
         <sql>CREATE EXTENSION IF NOT EXISTS "uuid-ossp";</sql>
     </changeSet>
 

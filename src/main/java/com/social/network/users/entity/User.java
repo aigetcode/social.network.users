@@ -1,5 +1,6 @@
 package com.social.network.users.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,7 +40,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @Table(name="USERS")
-@SQLDelete(sql = "UPDATE users SET deleted = true WHERE id=?")
+@SQLDelete(sql = "UPDATE USERS SET deleted = true WHERE id=? and version=?")
 @FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
 @Filter(name = "deletedProductFilter", condition = "deleted = :isDeleted")
 public class User {
@@ -128,5 +129,21 @@ public class User {
         this.nickname = nickname;
         this.email = email;
         this.phoneNumber = phoneNumber;
+    }
+
+    public List<User> getFollowers() {
+        if (this.followers == null) {
+            return new ArrayList<>();
+        }
+
+        return followers;
+    }
+
+    public List<HardSkill> getHardSkills() {
+        if (this.hardSkills == null) {
+            return new ArrayList<>();
+        }
+
+        return hardSkills;
     }
 }

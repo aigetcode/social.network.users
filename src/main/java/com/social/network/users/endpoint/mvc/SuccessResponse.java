@@ -21,8 +21,8 @@ public class SuccessResponse<T> {
         return new SuccessResponse<>(true, t);
     }
 
-    public static SuccessResponse<Object> ok() {
-        return new SuccessResponse<>(true, new Object());
+    public static <T> SuccessResponse<T> ok() {
+        return new SuccessResponse<>(true, null);
     }
 
 }

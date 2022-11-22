@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @ControllerAdvice
@@ -25,6 +26,15 @@ public class ExceptionHandlerAdvice {
         log.error("Exception wrong arguments: " + ex.getMessage(), ex);
         BaseErrorResponse baseErrorResponse = new BaseErrorResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(ExceptionResponse.from(ex, baseErrorResponse));
+    }
+
+    @ExceptionHandler({NotFoundException.class})
+    public ResponseEntity<ExceptionResponse<?>> handle(Exception ex) {
+        log.error("Not found exception arguments: " + ex.getMessage(), ex);
+        BaseErrorResponse baseErrorResponse = new BaseErrorResponse(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(ExceptionResponse.from(ex, baseErrorResponse));
     }

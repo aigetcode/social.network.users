@@ -6,6 +6,7 @@ import com.social.network.users.entity.Country;
 import com.social.network.users.entity.HardSkill;
 import com.social.network.users.entity.User;
 import com.social.network.users.entity.dto.UserEntry;
+import com.social.network.users.exceptions.NotFoundException;
 import com.social.network.users.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
@@ -18,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,6 +30,8 @@ import java.util.UUID;
 @Service
 @Transactional
 public class UserService {
+
+    private static final String USER_NOT_FOUND = "User not found";
 
     private final UserRepository userRepository;
     private final HardSkillRepository hardSkillService;
@@ -62,9 +64,13 @@ public class UserService {
 
     public Page<UserEntry> getFollowersByUserId(int pageIndex, int pageSize, UUID userId, Sort sort) {
         log.info(String.format("Get page followers by userId[%s] page: %s, size: %s", userId, pageIndex, pageSize));
+        Utils.required(userId, "User id is required");
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
 
         Pageable pageable = PageRequest.of(pageIndex, pageSize, sort);
-        Page<User> users = userRepository.getFollowers(userId, pageable);
+        Page<User> users = userRepository.getFollowers(user.getId(), pageable);
         return new PageImpl<>(UserEntry.fromListUsers(users.getContent()), pageable, users.getTotalElements());
     }
 
@@ -82,7 +88,7 @@ public class UserService {
     public UserEntry getUserById(UUID userId) {
         log.info(String.format("Get user by id[%s]", userId));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new NotFoundException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
         return UserEntry.fromUser(user);
     }
 
@@ -119,9 +125,9 @@ public class UserService {
     public void subscribe(UUID userId, UUID followerId) {
         log.info(String.format("user[%s] subscribe on user[%s]", followerId, userId));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new NotFoundException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
         User follower = userRepository.findById(followerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new NotFoundException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
         user.getFollowers().add(follower);
         userRepository.save(user);
     }
@@ -129,9 +135,9 @@ public class UserService {
     public void unsubscribe(UUID userId, UUID followerId) {
         log.info(String.format("user[%s] unsubscribe on user[%s]", followerId, userId));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new NotFoundException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
         User follower = userRepository.findById(followerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new NotFoundException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
         user.getFollowers().remove(follower);
         userRepository.save(user);
     }

@@ -11,6 +11,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      javax:
+        persistence:
+          schema-generation:
+            drop-source: script
+            drop-script-source: drop-tables.sql
   liquibase:
     enabled: true
     drop-first: true

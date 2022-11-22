@@ -49,12 +49,6 @@ class UserEndpointTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserService userService;
-
     @BeforeEach
     private void init() {
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
@@ -73,20 +67,18 @@ class UserEndpointTest {
     }
 
     @Test
+    @Sql(value = {"classpath:./sql/drop-users.sql", "classpath:./sql/insert-user.sql"})
     void getAllUsers_200() throws Exception {
-        User user = Utils.createUser(createUserInput());
-        userService.createUser(user, Collections.emptyList());
-
         mvc.perform(get("/v1/users/all")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response").isArray())
-                .andExpect(jsonPath("$.response", Matchers.hasSize(1)));
+                .andExpect(jsonPath("$.response", Matchers.hasSize(4)));
     }
 
     @Test
-    @Sql(value = {"classpath:./sql/insert-user.sql", "classpath:./sql/insert-followers.sql"})
+    @Sql(value = {"classpath:./sql/drop-users.sql", "classpath:./sql/insert-user.sql", "classpath:./sql/insert-followers.sql"})
     void user_followers_test_200() throws Exception {
         String uuid = "68cdef45-e98e-4e86-91c8-b8fe437ae01f";
         String expectedUuid = "69cdef45-e98e-4e86-91c8-b8fe437ae01f";
@@ -115,7 +107,7 @@ class UserEndpointTest {
     }
 
     @Test
-    @Sql(value = "classpath:./sql/insert-user.sql")
+    @Sql(value = {"classpath:./sql/drop-users.sql", "classpath:./sql/insert-user.sql"})
     void user_by_id_test_200() throws Exception {
         String uuid = "68cdef45-e98e-4e86-91c8-b8fe437ae01f";
         UserEntry expectedUserEntry = UserEntry.builder()
@@ -138,7 +130,7 @@ class UserEndpointTest {
     }
 
     @Test
-    @Sql(value = "classpath:./sql/insert-user.sql")
+    @Sql(value = {"classpath:./sql/drop-users.sql", "classpath:./sql/insert-user.sql"})
     void user_by_id_test_404() throws Exception {
         String uuid = UUID.randomUUID().toString();
 
@@ -150,7 +142,7 @@ class UserEndpointTest {
     }
 
     @Test
-    @Sql(value = "classpath:./sql/insert-user.sql")
+    @Sql(value = {"classpath:./sql/drop-users.sql", "classpath:./sql/insert-user.sql"})
     void subscribe_test_200() throws Exception {
         String userId = "68cdef45-e98e-4e86-91c8-b8fe437ae01f";
         String followerId = "71cdef45-e98e-4e86-91c8-b8fe437ae01f";
@@ -172,7 +164,7 @@ class UserEndpointTest {
     }
 
     @Test
-    @Sql(value = {"classpath:./sql/insert-user.sql", "classpath:./sql/insert-followers.sql"})
+    @Sql(value = {"classpath:./sql/drop-users.sql", "classpath:./sql/insert-user.sql", "classpath:./sql/insert-followers.sql"})
     void unsubscribe_test_200() throws Exception {
         String userId = "69cdef45-e98e-4e86-91c8-b8fe437ae01f";
         String followerId = "71cdef45-e98e-4e86-91c8-b8fe437ae01f";
@@ -194,7 +186,7 @@ class UserEndpointTest {
     }
 
     @Test
-    @Sql(value = {"classpath:./sql/insert-user.sql"})
+    @Sql(value = {"classpath:./sql/drop-users.sql", "classpath:./sql/insert-user.sql"})
     void delete_test_200() throws Exception {
         String userId = "70cdef45-e98e-4e86-91c8-b8fe437ae01f";
 

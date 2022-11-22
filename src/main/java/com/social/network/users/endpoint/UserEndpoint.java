@@ -36,7 +36,7 @@ import java.util.UUID;
 @Validated
 @RestController
 @RequestMapping("/v1/users")
-@Tag(name = "Работа с пользователями")
+@Tag(name = "User endpoint")
 @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "${api.response-codes.ok.desc}"),
         @ApiResponse(responseCode = "400", content = {
@@ -88,7 +88,7 @@ public class UserEndpoint {
 
     @Operation(summary = "Получение пользователя по id")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable String id) {
+    public ResponseEntity<SuccessResponse<UserEntry>> getUserById(@PathVariable String id) {
         UUID uuid = UUID.fromString(id);
         UserEntry user = userService.getUserById(uuid);
         return ResponseEntity.ok(SuccessResponse.of(user));

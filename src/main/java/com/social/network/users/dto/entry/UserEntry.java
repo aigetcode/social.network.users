@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.social.network.users.entity.Country;
 import com.social.network.users.entity.HardSkill;
 import com.social.network.users.entity.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +16,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+@Schema(description = "Пользователь")
 @Getter
 @Setter
 @Builder
@@ -94,3 +96,4 @@ public class UserEntry {
     }
 
 }
+

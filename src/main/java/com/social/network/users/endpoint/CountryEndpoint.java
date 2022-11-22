@@ -29,7 +29,7 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/v1/country")
-@Tag(name = "Работа со странами")
+@Tag(name = "Country endpoint")
 @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "${api.response-codes.ok.desc}"),
         @ApiResponse(responseCode = "400", content = {

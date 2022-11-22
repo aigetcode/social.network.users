@@ -2,6 +2,7 @@ plugins {
     id("org.springframework.boot") version "2.7.5"
     java
     `maven-publish`
+    jacoco
 }
 
 group = "com.social.network"
@@ -30,6 +31,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-ui:${openApiVersion}")
     implementation("commons-validator:commons-validator:1.7")
     implementation("org.liquibase:liquibase-core:4.17.2")
+    implementation ("com.google.code.findbugs:jsr305:3.0.2")
     runtimeOnly("org.springframework.boot:spring-boot-devtools:${springVersion}")
     runtimeOnly("org.postgresql:postgresql:${postgresqlVersion}")
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springVersion}")
@@ -54,4 +56,19 @@ tasks.withType<JavaCompile>() {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.8".toBigDecimal()
+            }
+
+            includes = listOf(
+                "com.social.network.users.endpoint.*",
+                "com.social.network.users.service.*",
+            )
+        }
+    }
 }

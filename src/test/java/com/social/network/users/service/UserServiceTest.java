@@ -6,6 +6,7 @@ import com.social.network.users.entity.Country;
 import com.social.network.users.entity.HardSkill;
 import com.social.network.users.entity.User;
 import com.social.network.users.entity.dto.UserEntry;
+import com.social.network.users.exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +18,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -122,7 +122,7 @@ class UserServiceTest {
 
         doReturn(Optional.empty()).when(userRepository).findById(any());
 
-        assertThrows(ResponseStatusException.class,
+        assertThrows(NotFoundException.class,
                 () -> userService.getUserById(uuid));
     }
 
@@ -193,19 +193,15 @@ class UserServiceTest {
     }
 
     @Test
-    void getFollowersByUserId_passed() {
+    void getFollowersByUserId_exception() {
         int pageIndex = 0;
         int pageSize = 10;
-        Pageable pageable = PageRequest.of(pageIndex, pageSize,
-                Sort.by("name").and(Sort.by("surname")));
-        List<User> users = Arrays.asList(new User(), new User());
+        Sort sort = Sort.by("name").and(Sort.by("surname"));
+        UUID uuid = UUID.randomUUID();
 
-        doReturn(new PageImpl<>(users, pageable, users.size()))
-                .when(userRepository).getFollowers(any(), any());
-
-        Page<UserEntry> userEntries = userService.getFollowersByUserId(pageIndex, pageSize,
-                null, Sort.by("name").and(Sort.by("surname")));
-        assertEquals(2L, userEntries.getTotalElements());
+        assertThrows(NotFoundException.class,
+                () -> userService.getFollowersByUserId(pageIndex, pageSize, uuid, sort)
+        );
     }
 
     @Test

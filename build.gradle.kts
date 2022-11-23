@@ -32,7 +32,6 @@ dependencies {
     implementation("commons-validator:commons-validator:1.7")
     implementation("org.liquibase:liquibase-core:4.17.2")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
-    runtimeOnly("org.springframework.boot:spring-boot-devtools:${springVersion}")
     runtimeOnly("org.postgresql:postgresql:${postgresqlVersion}")
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springVersion}")
     testImplementation("org.mockito:mockito-inline:4.8.0")

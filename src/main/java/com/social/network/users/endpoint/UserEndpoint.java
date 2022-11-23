@@ -1,6 +1,6 @@
 package com.social.network.users.endpoint;
 
-import com.social.network.users.endpoint.mvc.SuccessResponse;
+import com.social.network.users.endpoint.mvc.Api;
 import com.social.network.users.entity.User;
 import com.social.network.users.dto.SortDto;
 import com.social.network.users.dto.entry.UserEntry;
@@ -27,14 +27,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
+@Api
 @Validated
-@RestController
 @RequestMapping("/v1/users")
 @Tag(name = "User endpoint")
 @ApiResponses(value = {
@@ -56,83 +55,83 @@ public class UserEndpoint {
         this.userService = userService;
     }
 
-    @Operation(summary = "Получение пользователей постранично")
     @GetMapping
-    public ResponseEntity<SuccessResponse<Page<UserEntry>>> getPageUsers(@RequestParam(value = "pageIndex") int pageIndex,
+    @Operation(summary = "Получение пользователей постранично")
+    public ResponseEntity<Page<UserEntry>> getPageUsers(@RequestParam(value = "pageIndex") int pageIndex,
                                           @RequestParam(value = "pageSize") int pageSize,
                                           @RequestParam(value = "country", required = false) String country,
                                           @RequestParam(value = "sorting", defaultValue = "id,desc",
                                                   required = false) String[] sortEntries) {
         Page<UserEntry> users = userService.getPageUsers(pageIndex, pageSize, country, SortDto.toSort(sortEntries));
-        return ResponseEntity.ok(SuccessResponse.of(users));
+        return ResponseEntity.ok(users);
     }
 
-    @Operation(summary = "Получение подписчиков пользователя постранично")
     @GetMapping("{id}/followers")
-    public ResponseEntity<SuccessResponse<Page<UserEntry>>> getPageFollowersByUserId(@PathVariable(value = "id") String userId,
+    @Operation(summary = "Получение подписчиков пользователя постранично")
+    public ResponseEntity<Page<UserEntry>> getPageFollowersByUserId(@PathVariable(value = "id") String userId,
                                                        @RequestParam(value = "pageIndex") int pageIndex,
                                                        @RequestParam(value = "pageSize") int pageSize,
                                                        @RequestParam(value = "sorting", defaultValue = "id,desc",
                                                                required = false) String[] sortEntries) {
         Page<UserEntry> users = userService.getFollowersByUserId(pageIndex, pageSize,
                 UUID.fromString(userId), SortDto.toSort(sortEntries));
-        return ResponseEntity.ok(SuccessResponse.of(users));
+        return ResponseEntity.ok(users);
     }
 
-    @Operation(summary = "Получение всех пользователей")
     @GetMapping("/all")
-    public ResponseEntity<SuccessResponse<List<UserEntry>>> getAllUsers() {
+    @Operation(summary = "Получение всех пользователей")
+    public ResponseEntity<List<UserEntry>> getAllUsers() {
         List<UserEntry> users = userService.getAllUsers(false);
-        return ResponseEntity.ok(SuccessResponse.of(users));
+        return ResponseEntity.ok(users);
     }
 
-    @Operation(summary = "Получение пользователя по id")
     @GetMapping("/{id}")
-    public ResponseEntity<SuccessResponse<UserEntry>> getUserById(@PathVariable String id) {
+    @Operation(summary = "Получение пользователя по id")
+    public ResponseEntity<UserEntry> getUserById(@PathVariable String id) {
         UUID uuid = UUID.fromString(id);
         UserEntry user = userService.getUserById(uuid);
-        return ResponseEntity.ok(SuccessResponse.of(user));
+        return ResponseEntity.ok(user);
     }
 
-    @Operation(summary = "Добавление пользователя")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<SuccessResponse<String>> createUser(@Valid @RequestBody UserInput userInput) {
+    @Operation(summary = "Добавление пользователя")
+    public ResponseEntity<String> createUser(@Valid @RequestBody UserInput userInput) {
         User user = Utils.createUser(userInput);
         UUID uuid = userService.createUser(user, userInput.getHardSkills());
-        return ResponseEntity.ok(SuccessResponse.of(uuid.toString()));
+        return ResponseEntity.ok(uuid.toString());
     }
 
-    @Operation(summary = "Обновление пользователя")
     @PutMapping("/{id}")
-    public ResponseEntity<SuccessResponse<String>> updateUser(@Valid @RequestBody UserInput userInput,
+    @Operation(summary = "Обновление пользователя")
+    public ResponseEntity<String> updateUser(@Valid @RequestBody UserInput userInput,
                                         @PathVariable String id) {
         User user = Utils.createUser(userInput);
         UUID uuid = userService.updateUser(UUID.fromString(id), user, userInput.getHardSkills());
-        return ResponseEntity.ok(SuccessResponse.of(uuid.toString()));
+        return ResponseEntity.ok(uuid.toString());
     }
 
-    @Operation(summary = "Удаление пользователя")
     @DeleteMapping("/{id}")
-    public ResponseEntity<SuccessResponse<Object>> deleteUser(@PathVariable String id) {
+    @Operation(summary = "Удаление пользователя")
+    public ResponseEntity<?> deleteUser(@PathVariable String id) {
         userService.deleteUser(UUID.fromString(id));
-        return ResponseEntity.ok(SuccessResponse.ok());
+        return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Подписаться на пользователя")
     @PostMapping("/{followerId}/subscribe/{userId}")
-    public ResponseEntity<SuccessResponse<Object>> subscribe(@PathVariable String userId,
+    @Operation(summary = "Подписаться на пользователя")
+    public ResponseEntity<?> subscribe(@PathVariable String userId,
                                        @PathVariable String followerId) {
         userService.subscribe(UUID.fromString(userId), UUID.fromString(followerId));
-        return ResponseEntity.ok(SuccessResponse.ok());
+        return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Отписаться от пользователя")
     @PostMapping("/{followerId}/unsubscribe/{userId}")
-    public ResponseEntity<SuccessResponse<Object>> unsubscribe(@PathVariable String userId,
+    @Operation(summary = "Отписаться от пользователя")
+    public ResponseEntity<?> unsubscribe(@PathVariable String userId,
                                          @PathVariable String followerId) {
         userService.unsubscribe(UUID.fromString(userId), UUID.fromString(followerId));
-        return ResponseEntity.ok(SuccessResponse.ok());
+        return ResponseEntity.ok().build();
     }
 
 }

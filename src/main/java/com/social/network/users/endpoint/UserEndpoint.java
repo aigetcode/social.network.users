@@ -113,14 +113,14 @@ public class UserEndpoint {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Удаление пользователя")
-    public ResponseEntity<?> deleteUser(@PathVariable String id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
         userService.deleteUser(UUID.fromString(id));
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{followerId}/subscribe/{userId}")
     @Operation(summary = "Подписаться на пользователя")
-    public ResponseEntity<?> subscribe(@PathVariable String userId,
+    public ResponseEntity<Void> subscribe(@PathVariable String userId,
                                        @PathVariable String followerId) {
         userService.subscribe(UUID.fromString(userId), UUID.fromString(followerId));
         return ResponseEntity.ok().build();
@@ -128,7 +128,7 @@ public class UserEndpoint {
 
     @PostMapping("/{followerId}/unsubscribe/{userId}")
     @Operation(summary = "Отписаться от пользователя")
-    public ResponseEntity<?> unsubscribe(@PathVariable String userId,
+    public ResponseEntity<Void> unsubscribe(@PathVariable String userId,
                                          @PathVariable String followerId) {
         userService.unsubscribe(UUID.fromString(userId), UUID.fromString(followerId));
         return ResponseEntity.ok().build();

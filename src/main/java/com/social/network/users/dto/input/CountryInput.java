@@ -1,4 +1,4 @@
-package com.social.network.users.entity.dto;
+package com.social.network.users.dto.input;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;

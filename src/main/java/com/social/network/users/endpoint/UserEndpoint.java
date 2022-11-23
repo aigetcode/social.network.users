@@ -2,9 +2,9 @@ package com.social.network.users.endpoint;
 
 import com.social.network.users.endpoint.mvc.SuccessResponse;
 import com.social.network.users.entity.User;
-import com.social.network.users.entity.dto.SortDto;
-import com.social.network.users.entity.dto.UserEntry;
-import com.social.network.users.entity.dto.UserInput;
+import com.social.network.users.dto.SortDto;
+import com.social.network.users.dto.entry.UserEntry;
+import com.social.network.users.dto.input.UserInput;
 import com.social.network.users.service.UserService;
 import com.social.network.users.util.Utils;
 import org.springframework.data.domain.Page;

@@ -1,4 +1,4 @@
-package com.social.network.users.entity.dto;
+package com.social.network.users.dto.entry;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -58,7 +58,7 @@ public class UserEndpoint {
 
     @Operation(summary = "Получение пользователей постранично")
     @GetMapping
-    public ResponseEntity<?> getPageUsers(@RequestParam(value = "pageIndex") int pageIndex,
+    public ResponseEntity<SuccessResponse<Page<UserEntry>>> getPageUsers(@RequestParam(value = "pageIndex") int pageIndex,
                                           @RequestParam(value = "pageSize") int pageSize,
                                           @RequestParam(value = "country", required = false) String country,
                                           @RequestParam(value = "sorting", defaultValue = "id,desc",
@@ -69,7 +69,7 @@ public class UserEndpoint {
 
     @Operation(summary = "Получение подписчиков пользователя постранично")
     @GetMapping("{id}/followers")
-    public ResponseEntity<?> getPageFollowersByUserId(@PathVariable(value = "id") String userId,
+    public ResponseEntity<SuccessResponse<Page<UserEntry>>> getPageFollowersByUserId(@PathVariable(value = "id") String userId,
                                                        @RequestParam(value = "pageIndex") int pageIndex,
                                                        @RequestParam(value = "pageSize") int pageSize,
                                                        @RequestParam(value = "sorting", defaultValue = "id,desc",
@@ -81,7 +81,7 @@ public class UserEndpoint {
 
     @Operation(summary = "Получение всех пользователей")
     @GetMapping("/all")
-    public ResponseEntity<?> getAllUsers() {
+    public ResponseEntity<SuccessResponse<List<UserEntry>>> getAllUsers() {
         List<UserEntry> users = userService.getAllUsers(false);
         return ResponseEntity.ok(SuccessResponse.of(users));
     }
@@ -97,7 +97,7 @@ public class UserEndpoint {
     @Operation(summary = "Добавление пользователя")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> createUser(@Valid @RequestBody UserInput userInput) {
+    public ResponseEntity<SuccessResponse<String>> createUser(@Valid @RequestBody UserInput userInput) {
         User user = Utils.createUser(userInput);
         UUID uuid = userService.createUser(user, userInput.getHardSkills());
         return ResponseEntity.ok(SuccessResponse.of(uuid.toString()));
@@ -105,7 +105,7 @@ public class UserEndpoint {
 
     @Operation(summary = "Обновление пользователя")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@Valid @RequestBody UserInput userInput,
+    public ResponseEntity<SuccessResponse<String>> updateUser(@Valid @RequestBody UserInput userInput,
                                         @PathVariable String id) {
         User user = Utils.createUser(userInput);
         UUID uuid = userService.updateUser(UUID.fromString(id), user, userInput.getHardSkills());
@@ -114,14 +114,14 @@ public class UserEndpoint {
 
     @Operation(summary = "Удаление пользователя")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable String id) {
+    public ResponseEntity<SuccessResponse<Object>> deleteUser(@PathVariable String id) {
         userService.deleteUser(UUID.fromString(id));
         return ResponseEntity.ok(SuccessResponse.ok());
     }
 
     @Operation(summary = "Подписаться на пользователя")
     @PostMapping("/{followerId}/subscribe/{userId}")
-    public ResponseEntity<?> subscribe(@PathVariable String userId,
+    public ResponseEntity<SuccessResponse<Object>> subscribe(@PathVariable String userId,
                                        @PathVariable String followerId) {
         userService.subscribe(UUID.fromString(userId), UUID.fromString(followerId));
         return ResponseEntity.ok(SuccessResponse.ok());
@@ -129,7 +129,7 @@ public class UserEndpoint {
 
     @Operation(summary = "Отписаться от пользователя")
     @PostMapping("/{followerId}/unsubscribe/{userId}")
-    public ResponseEntity<?> unsubscribe(@PathVariable String userId,
+    public ResponseEntity<SuccessResponse<Object>> unsubscribe(@PathVariable String userId,
                                          @PathVariable String followerId) {
         userService.unsubscribe(UUID.fromString(userId), UUID.fromString(followerId));
         return ResponseEntity.ok(SuccessResponse.ok());

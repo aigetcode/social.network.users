@@ -6,13 +6,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @ControllerAdvice
 public class ExceptionHandlerAdvice {
 
-    @ExceptionHandler(Throwable.class)
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse<?>> handle(Throwable ex) {
         log.error("Exception handling and serialization: " + ex.getMessage(), ex);
         BaseErrorResponse baseErrorResponse = new BaseErrorResponse(ex.getMessage());

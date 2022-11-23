@@ -1,6 +1,7 @@
 server:
   servlet:
     context-path: "/api"
+
 spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/users}
@@ -23,3 +24,12 @@ springdoc:
   swagger-ui:
     path: "/swagger-ui.html" # swagger: http://localhost:8080/api/swagger-ui/index.html
     version: "v1"
+
+api:
+  response-codes:
+    ok:
+      desc: OK
+    badRequest:
+      desc: BAD_REQUEST
+    notFound:
+      desc: NOT_FOUND

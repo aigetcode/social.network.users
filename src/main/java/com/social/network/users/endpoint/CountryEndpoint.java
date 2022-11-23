@@ -2,7 +2,7 @@ package com.social.network.users.endpoint;
 
 import com.social.network.users.endpoint.mvc.SuccessResponse;
 import com.social.network.users.entity.Country;
-import com.social.network.users.entity.dto.CountryInput;
+import com.social.network.users.dto.input.CountryInput;
 import com.social.network.users.service.CountryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

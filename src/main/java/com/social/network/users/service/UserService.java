@@ -5,7 +5,7 @@ import com.social.network.users.dao.UserRepository;
 import com.social.network.users.entity.Country;
 import com.social.network.users.entity.HardSkill;
 import com.social.network.users.entity.User;
-import com.social.network.users.entity.dto.UserEntry;
+import com.social.network.users.dto.entry.UserEntry;
 import com.social.network.users.exceptions.NotFoundException;
 import com.social.network.users.util.Utils;
 import lombok.extern.slf4j.Slf4j;

@@ -3,10 +3,8 @@ package com.social.network.users.util;
 import com.social.network.users.entity.Country;
 import com.social.network.users.entity.User;
 import com.social.network.users.entity.UserSex;
-import com.social.network.users.entity.dto.UserInput;
+import com.social.network.users.dto.input.UserInput;
 import org.apache.commons.validator.routines.EmailValidator;
-
-import java.util.UUID;
 
 public class Utils {
 

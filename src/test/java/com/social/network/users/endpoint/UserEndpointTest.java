@@ -1,13 +1,9 @@
 package com.social.network.users.endpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.social.network.users.dao.UserRepository;
 import com.social.network.users.endpoint.mvc.SuccessResponse;
-import com.social.network.users.entity.User;
-import com.social.network.users.entity.dto.UserEntry;
-import com.social.network.users.entity.dto.UserInput;
-import com.social.network.users.service.UserService;
-import com.social.network.users.util.Utils;
+import com.social.network.users.dto.entry.UserEntry;
+import com.social.network.users.dto.input.UserInput;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -55,19 +52,27 @@ class UserEndpointTest {
     }
 
     @Test
+    @Sql(scripts = "classpath:./sql/drop-users.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
     void create_test_200() throws Exception {
         UserInput userInput = createUserInput();
 
         mvc.perform(post("/v1/users")
                         .content(objectMapper.writeValueAsString(userInput))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
                 .andDo(print())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response").isString());
     }
 
     @Test
-    @Sql(value = {"classpath:./sql/drop-users.sql", "classpath:./sql/insert-user.sql"})
+    @Sql(value = "classpath:./sql/insert-user.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
+    @Sql(value = "classpath:./sql/drop-users.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
     void getAllUsers_200() throws Exception {
         mvc.perform(get("/v1/users/all")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -78,7 +83,12 @@ class UserEndpointTest {
     }
 
     @Test
-    @Sql(value = {"classpath:./sql/drop-users.sql", "classpath:./sql/insert-user.sql", "classpath:./sql/insert-followers.sql"})
+    @Sql(value = {"classpath:./sql/insert-user.sql", "classpath:./sql/insert-followers.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
+    @Sql(value = "classpath:./sql/drop-users.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
     void user_followers_test_200() throws Exception {
         String uuid = "68cdef45-e98e-4e86-91c8-b8fe437ae01f";
         String expectedUuid = "69cdef45-e98e-4e86-91c8-b8fe437ae01f";
@@ -94,6 +104,9 @@ class UserEndpointTest {
     }
 
     @Test
+    @Sql(value = "classpath:./sql/drop-users.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
     void user_followers_test_404() throws Exception {
         String uuid = UUID.randomUUID().toString();
 
@@ -107,7 +120,12 @@ class UserEndpointTest {
     }
 
     @Test
-    @Sql(value = {"classpath:./sql/drop-users.sql", "classpath:./sql/insert-user.sql"})
+    @Sql(value = "classpath:./sql/insert-user.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
+    @Sql(value = "classpath:./sql/drop-users.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
     void user_by_id_test_200() throws Exception {
         String uuid = "68cdef45-e98e-4e86-91c8-b8fe437ae01f";
         UserEntry expectedUserEntry = UserEntry.builder()
@@ -130,7 +148,12 @@ class UserEndpointTest {
     }
 
     @Test
-    @Sql(value = {"classpath:./sql/drop-users.sql", "classpath:./sql/insert-user.sql"})
+    @Sql(value = "classpath:./sql/insert-user.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
+    @Sql(value = "classpath:./sql/drop-users.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
     void user_by_id_test_404() throws Exception {
         String uuid = UUID.randomUUID().toString();
 
@@ -142,7 +165,12 @@ class UserEndpointTest {
     }
 
     @Test
-    @Sql(value = {"classpath:./sql/drop-users.sql", "classpath:./sql/insert-user.sql"})
+    @Sql(value = "classpath:./sql/insert-user.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
+    @Sql(value = "classpath:./sql/drop-users.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
     void subscribe_test_200() throws Exception {
         String userId = "68cdef45-e98e-4e86-91c8-b8fe437ae01f";
         String followerId = "71cdef45-e98e-4e86-91c8-b8fe437ae01f";
@@ -164,7 +192,12 @@ class UserEndpointTest {
     }
 
     @Test
-    @Sql(value = {"classpath:./sql/drop-users.sql", "classpath:./sql/insert-user.sql", "classpath:./sql/insert-followers.sql"})
+    @Sql(value = {"classpath:./sql/insert-user.sql", "classpath:./sql/insert-followers.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
+    @Sql(value = "classpath:./sql/drop-users.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
     void unsubscribe_test_200() throws Exception {
         String userId = "69cdef45-e98e-4e86-91c8-b8fe437ae01f";
         String followerId = "71cdef45-e98e-4e86-91c8-b8fe437ae01f";
@@ -186,7 +219,12 @@ class UserEndpointTest {
     }
 
     @Test
-    @Sql(value = {"classpath:./sql/drop-users.sql", "classpath:./sql/insert-user.sql"})
+    @Sql(value = "classpath:./sql/insert-user.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
+    @Sql(value = "classpath:./sql/drop-users.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
     void delete_test_200() throws Exception {
         String userId = "70cdef45-e98e-4e86-91c8-b8fe437ae01f";
 

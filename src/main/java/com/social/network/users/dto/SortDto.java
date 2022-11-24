@@ -1,5 +1,6 @@
 package com.social.network.users.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Дто для сортировки", defaultValue = "sorting=\"field, direction\"")
 public class SortDto {
 
     private String fieldName;

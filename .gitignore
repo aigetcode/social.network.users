@@ -61,3 +61,6 @@ gradle-app.setting
 ### Gradle Patch ###
 # Java heap dump
 *.hprof
+
+docker-compose/data/*
+docker-compose/docker/**/*.jar

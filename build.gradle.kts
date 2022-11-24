@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.social.network"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 description = "users"
 java.sourceCompatibility = JavaVersion.VERSION_17
 

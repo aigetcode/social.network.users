@@ -13,7 +13,7 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 // version variables
 val springVersion = "2.7.5"
 val lombokVersion = "1.18.24"
-val openApiVersion = "1.6.12"
+val openApiVersion = "1.6.13"
 val postgresqlVersion = "42.5.0"
 val h2Version = "2.1.214"
 

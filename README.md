@@ -3,35 +3,38 @@ This service handles basics operation with users and followers
 
 
 ### Check test coverage (minimum 80%):
-    `gradle build jacoco jacocoTestCoverageVerification`
+    gradle build jacoco jacocoTestCoverageVerification
 
 ### Build jacoco report:
-    `gradle build jacoco jacocoTestReport`
+    gradle build jacoco jacocoTestReport
 
-Will building in `build/reports/test/html/index.html`
+Reports will build in `build/reports/test/html/index.html`
 
+### Grafana:
+
+    localhost:3000
 
 ## Docker compose
 
 #### 0. Build gradle project
-    ``gradle clean build``
+    gradle clean build
 
 #### 1. Build service image
 
-    ``./servis.sh build``
+    ./servis.sh build
 
 #### 2. Start containers
 
-    ``./servis.sh start``
+    ./servis.sh start
 
 #### 2. Check that all containers are alive
 
-    ``docker ps -a``
+    docker ps -a
 
 #### 3. Stop containers
 
-    ``./server.sh stop``
+    ./server.sh stop
 
 #### 4. If you need to install from scratch - i.e. delete all data, then we perform a cleaning
 
-    ``./server.sh clean``
+    ./server.sh clean

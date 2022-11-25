@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-BUILD_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PROJECT_VERSION=$(grep -oP 'version = "\K[^"\047]+(?=["\047])' $BUILD_DIR/../build.gradle.kts)
-
 do_build() {
     docker/users/build.sh
 }

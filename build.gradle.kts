@@ -1,8 +1,14 @@
+import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
+import io.spring.gradle.dependencymanagement.dsl.ImportsHandler
+
 plugins {
     id("org.springframework.boot") version "2.7.5"
+    id("io.spring.dependency-management") version "1.0.12.RELEASE"
     java
     `maven-publish`
     jacoco
+    id("nebula.integtest") version "9.6.2"
+    id("com.dorongold.task-tree") version "2.1.0"
 }
 
 group = "com.social.network"
@@ -35,14 +41,21 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator:${springVersion}")
     implementation("io.micrometer:micrometer-registry-prometheus:1.10.2")
     runtimeOnly("org.postgresql:postgresql:${postgresqlVersion}")
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+    testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    // unit test own dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springVersion}")
     testImplementation("org.mockito:mockito-inline:4.8.0")
     testImplementation("com.h2database:h2:${h2Version}")
-
-    compileOnly("org.projectlombok:lombok:${lombokVersion}")
-    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+    testImplementation("org.testcontainers:junit-jupiter")
     testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
-    testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    // integration test own dependencies
+    integTestImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:3.1.5")
+    integTestImplementation("org.testcontainers:postgresql")
+    integTestRuntimeOnly("com.h2database:h2")
 }
 
 publishing {
@@ -51,11 +64,21 @@ publishing {
     }
 }
 
+configure<DependencyManagementExtension> {
+    imports(delegateClosureOf<ImportsHandler> {
+        mavenBom("org.testcontainers:testcontainers-bom:1.17.6")
+    })
+}
+
 tasks.withType<JavaCompile>() {
     options.encoding = "UTF-8"
 }
 
 tasks.test {
+    useJUnitPlatform()
+}
+
+tasks.integrationTest {
     useJUnitPlatform()
 }
 

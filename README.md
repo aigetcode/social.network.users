@@ -38,3 +38,12 @@ Reports will build in `build/reports/test/html/index.html`
 #### 4. If you need to install from scratch - i.e. delete all data, then we perform a cleaning
 
     ./server.sh clean
+
+
+## Tests
+
+#### Unit tests 
+    gradle test
+
+#### Integration tests
+    gradle integrationTest

@@ -9,18 +9,19 @@ plugins {
     jacoco
     id("nebula.integtest") version "9.6.2"
     id("com.dorongold.task-tree") version "2.1.0"
+    id("com.google.cloud.tools.jib") version "3.3.1"
 }
 
 group = "com.social.network"
-version = "0.0.1"
+version = "0.0.2"
 description = "users"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 // version variables
 val springVersion = "2.7.5"
 val lombokVersion = "1.18.24"
-val openApiVersion = "1.6.13"
-val postgresqlVersion = "42.5.0"
+val openApiVersion = "1.6.14"
+val postgresqlVersion = "42.5.1"
 val h2Version = "2.1.214"
 
 repositories {
@@ -36,7 +37,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:${springVersion}")
     implementation("org.springdoc:springdoc-openapi-ui:${openApiVersion}")
     implementation("commons-validator:commons-validator:1.7")
-    implementation("org.liquibase:liquibase-core:4.17.2")
+    implementation("org.liquibase:liquibase-core:4.18.0")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
     implementation("org.springframework.boot:spring-boot-starter-actuator:${springVersion}")
     implementation("io.micrometer:micrometer-registry-prometheus:1.10.2")
@@ -47,13 +48,13 @@ dependencies {
 
     // unit test own dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springVersion}")
-    testImplementation("org.mockito:mockito-inline:4.8.0")
+    testImplementation("org.mockito:mockito-inline:4.10.0")
     testImplementation("com.h2database:h2:${h2Version}")
     testImplementation("org.testcontainers:junit-jupiter")
     testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
 
     // integration test own dependencies
-    integTestImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:3.1.5")
+    integTestImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:4.0.0")
     integTestImplementation("org.testcontainers:postgresql")
     integTestRuntimeOnly("com.h2database:h2")
 }

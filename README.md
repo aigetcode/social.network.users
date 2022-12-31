@@ -16,6 +16,10 @@ Reports will build in `build/reports/test/html/index.html`
 
 ## Docker compose
 
+#### Create docker image from app
+
+    gradle jibDockerBuild
+
 #### 0. Build gradle project
     gradle clean build
 

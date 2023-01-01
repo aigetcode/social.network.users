@@ -11,6 +11,7 @@ plugins {
     id("com.dorongold.task-tree") version "2.1.0"
     id("com.google.cloud.tools.jib") version "3.3.1"
     checkstyle
+    id("org.sonarqube") version "3.5.0.2730"
 }
 
 group = "com.social.network"
@@ -104,4 +105,12 @@ checkstyle {
     isIgnoreFailures = false
     maxWarnings = 0
     maxErrors = 0
+}
+
+sonarqube {
+    properties {
+        properties(mapOf("sonar.projectKey" to "social-users",
+            "sonar.organization" to "aigetcode",
+            "sonar.host.url" to "https://sonarcloud.io"))
+    }
 }

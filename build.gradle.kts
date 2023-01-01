@@ -10,6 +10,7 @@ plugins {
     id("nebula.integtest") version "9.6.2"
     id("com.dorongold.task-tree") version "2.1.0"
     id("com.google.cloud.tools.jib") version "3.3.1"
+    checkstyle
 }
 
 group = "com.social.network"
@@ -96,4 +97,11 @@ tasks.jacocoTestCoverageVerification {
             )
         }
     }
+}
+
+checkstyle {
+    toolVersion = "10.3.2"
+    isIgnoreFailures = false
+    maxWarnings = 0
+    maxErrors = 0
 }

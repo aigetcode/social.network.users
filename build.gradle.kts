@@ -10,6 +10,8 @@ plugins {
     id("nebula.integtest") version "9.6.2"
     id("com.dorongold.task-tree") version "2.1.0"
     id("com.google.cloud.tools.jib") version "3.3.1"
+    checkstyle
+    id("org.sonarqube") version "3.5.0.2730"
 }
 
 group = "com.social.network"
@@ -95,5 +97,20 @@ tasks.jacocoTestCoverageVerification {
                 "com.social.network.users.service.*",
             )
         }
+    }
+}
+
+checkstyle {
+    toolVersion = "10.3.2"
+    isIgnoreFailures = false
+    maxWarnings = 0
+    maxErrors = 0
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "social-users")
+        property("sonar.organization", "aigetcode")
+        property("sonar.host.url", "https://sonarcloud.io")
     }
 }

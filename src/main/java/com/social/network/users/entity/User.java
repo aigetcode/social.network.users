@@ -39,7 +39,7 @@ import java.util.UUID;
 @Entity
 @Builder
 @AllArgsConstructor
-@Table(name="USERS")
+@Table(name = "USERS")
 @SQLDelete(sql = "UPDATE USERS SET deleted = true WHERE id=? and version=?")
 @FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
 @Filter(name = "deletedProductFilter", condition = "deleted = :isDeleted")

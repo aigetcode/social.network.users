@@ -109,8 +109,8 @@ checkstyle {
 
 sonarqube {
     properties {
-        properties(mapOf("sonar.projectKey" to "social-users",
-            "sonar.organization" to "aigetcode",
-            "sonar.host.url" to "https://sonarcloud.io"))
+        property("sonar.projectKey", "social-users")
+        property("sonar.organization", "aigetcode")
+        property("sonar.host.url", "https://sonarcloud.io")
     }
 }

@@ -29,7 +29,6 @@ jobs:
         run: ./gradlew integrationTest
   build:
     runs-on: ubuntu-latest
-    needs: tests
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -41,6 +40,7 @@ jobs:
         run: ./gradlew build
 
 # maybe use it... https://sonarcloud.io/ helps
+# needs: [ unitTests, integrationTest ]
 
 #  sonarqube:
 #    runs-on: ubuntu-latest

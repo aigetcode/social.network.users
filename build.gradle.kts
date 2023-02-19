@@ -49,6 +49,11 @@ dependencies {
     implementation("com.google.code.findbugs:jsr305:3.0.2")
     implementation("org.springframework.boot:spring-boot-starter-actuator:${springVersion}")
     implementation("io.micrometer:micrometer-registry-prometheus:1.10.2")
+
+    // add for generate traceId and spanId
+    implementation("io.micrometer:micrometer-tracing:1.0.1")
+    implementation ("io.micrometer:micrometer-tracing-bridge-brave:1.0.1")
+
     runtimeOnly("org.postgresql:postgresql:${postgresqlVersion}")
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")

@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Api
+@Slf4j
 @Validated
 @RequestMapping("/v1/users")
 @Tag(name = "User endpoint")
@@ -81,6 +83,7 @@ public class UserEndpoint {
     @GetMapping("/all")
     @Operation(summary = "Получение всех пользователей")
     public ResponseEntity<List<UserEntry>> getAllUsers() {
+        log.info(">> GET users/all :: Получение всех пользователей");
         List<UserEntry> users = userService.getAllUsers(false);
         return ResponseEntity.ok(users);
     }

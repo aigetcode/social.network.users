@@ -1,6 +1,7 @@
 server:
   servlet:
-    context-path: "/api"
+    context-path: "/user/api"
+  port: 8081
 
 spring:
   datasource:
@@ -24,12 +25,13 @@ management:
       exposure:
         include: health,prometheus
   metrics:
-    export:
-      prometheus:
-        enabled: true
     distribution:
       percentiles-histogram:
         "[http.server.requests]": true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
 
 springdoc:
   api-docs:

@@ -1,4 +1,5 @@
 # User service
+
 This service handles basics operation with users and followers
 
 
@@ -11,36 +12,29 @@ This service handles basics operation with users and followers
 Reports will build in `build/reports/test/html/index.html`
 
 ### Grafana:
-
     localhost:3000
 
 ## Docker compose
 
 #### Create docker image from app
-
     gradle jibDockerBuild
 
 #### 0. Build gradle project
     gradle clean build
 
 #### 1. Build service image
-
     ./servis.sh build
 
 #### 2. Start containers
-
     ./servis.sh start
 
 #### 2. Check that all containers are alive
-
     docker ps -a
 
 #### 3. Stop containers
-
     ./server.sh stop
 
 #### 4. If you need to install from scratch - i.e. delete all data, then we perform a cleaning
-
     ./server.sh clean
 
 

@@ -2,8 +2,8 @@ import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import io.spring.gradle.dependencymanagement.dsl.ImportsHandler
 
 plugins {
-    id("org.springframework.boot") version "2.7.5"
-    id("io.spring.dependency-management") version "1.0.12.RELEASE"
+    id("org.springframework.boot") version "3.0.2"
+    id("io.spring.dependency-management") version "1.1.0"
     java
     `maven-publish`
     jacoco
@@ -20,11 +20,17 @@ description = "users"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 // version variables
-val springVersion = "2.7.5"
-val lombokVersion = "1.18.24"
+val springVersion = "3.0.2"
+val lombokVersion = "1.18.26"
 val openApiVersion = "1.6.14"
 val postgresqlVersion = "42.5.1"
 val h2Version = "2.1.214"
+
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
+}
 
 repositories {
     mavenLocal()
@@ -114,3 +120,5 @@ sonarqube {
         property("sonar.host.url", "https://sonarcloud.io")
     }
 }
+
+jib.to.image = "social-users:${version}"

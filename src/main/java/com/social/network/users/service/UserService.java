@@ -8,6 +8,8 @@ import com.social.network.users.entity.HardSkill;
 import com.social.network.users.entity.User;
 import com.social.network.users.exceptions.NotFoundException;
 import com.social.network.users.util.Utils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.hibernate.Filter;
@@ -19,10 +21,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 

@@ -4,16 +4,15 @@ import com.social.network.users.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface UserRepository extends PagingAndSortingRepository<User, UUID> {
+public interface UserRepository extends ListCrudRepository<User, UUID> {
 
-    List<User> findAll();
+    Page<User> findAll(Pageable pageable);
 
     Page<User> findAllByCountry_Name(Pageable pageable, String countryName);
 

@@ -10,7 +10,7 @@ echo "Building image: social-users:$PROJECT_VERSION"
 
 
 cp "$BUILD_DIR/../../build/libs/users-$PROJECT_VERSION.jar" "$BUILD_DIR/users.jar"
-
+cd docker/users
 echo "$(ls)"
 
 docker build . --tag "ghcr.io/aigetcode/social-users:$PROJECT_VERSION"

@@ -1,7 +1,7 @@
 server:
   servlet:
-    context-path: "/user/api"
-  port: 8081
+    context-path: "/api"
+  port: ${USER_SERVICE_PORT:8081}
 
 spring:
   application:

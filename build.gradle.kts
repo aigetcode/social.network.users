@@ -53,7 +53,7 @@ dependencies {
     // add for generate traceId and spanId
     implementation("io.micrometer:micrometer-tracing:1.0.1")
     implementation("io.micrometer:micrometer-tracing-bridge-brave:1.0.1")
-    implementation("io.zipkin.reporter2:zipkin-reporter-brave")
+    implementation("io.zipkin.reporter2:zipkin-reporter-brave:2.16.3")
 
     runtimeOnly("org.postgresql:postgresql:${postgresqlVersion}")
     compileOnly("org.projectlombok:lombok:${lombokVersion}")

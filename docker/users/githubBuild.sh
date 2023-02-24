@@ -11,8 +11,12 @@ echo "Building image: social-users:$PROJECT_VERSION"
 
 cp "$BUILD_DIR/../../build/libs/users-$PROJECT_VERSION.jar" "$BUILD_DIR/users.jar"
 
+echo "$(ls)"
+
 docker build . --tag "ghcr.io/aigetcode/social-users:$PROJECT_VERSION"
-docker run "ghcr.io/aigetcode/social-users:$PROJECT_VERSION"
+echo "Built docker image"
+
 docker push "ghcr.io/aigetcode/social-users:$PROJECT_VERSION"
+echo "Pushed docker image"
 
 echo "Built image: social-users:$PROJECT_VERSION"

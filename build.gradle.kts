@@ -20,7 +20,7 @@ description = "users"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 // version variables
-val springVersion = "3.0.2"
+val springVersion = "3.0.3"
 val lombokVersion = "1.18.26"
 val openApiVersion = "1.6.14"
 val postgresqlVersion = "42.5.1"

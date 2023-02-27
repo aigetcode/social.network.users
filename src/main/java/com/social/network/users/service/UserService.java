@@ -49,7 +49,7 @@ public class UserService {
     }
 
     public Page<UserEntry> getPageUsers(int pageIndex, int pageSize, String countryName, Sort sort) {
-        log.info(String.format("Get page users page: %s, size: %s", pageIndex, pageSize));
+        log.info(String.format("Get users page: %s, size: %s", pageIndex, pageSize));
         Pageable pageable = PageRequest.of(pageIndex, pageSize, sort);
 
         Page<User> users;

@@ -32,14 +32,16 @@ logging:
     reactor.netty.http.client: DEBUG
 
 management:
+  tracing:
+    sampling:
+      probability: 1.0
+  endpoint:
+    health:
+      show-details: always
   endpoints:
     web:
       exposure:
-        include: health,prometheus
-  metrics:
-    distribution:
-      percentiles-histogram:
-        "[http.server.requests]": true
+        include: "*"
   prometheus:
     metrics:
       export:

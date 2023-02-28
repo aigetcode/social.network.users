@@ -43,16 +43,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springVersion}")
     implementation("org.springframework.boot:spring-boot-starter-validation:${springVersion}")
     implementation("org.springframework.boot:spring-boot-starter-web:${springVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-actuator:${springVersion}")
     implementation("org.springdoc:springdoc-openapi-ui:${openApiVersion}")
     implementation("commons-validator:commons-validator:1.7")
     implementation("org.liquibase:liquibase-core:4.18.0")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
-    implementation("org.springframework.boot:spring-boot-starter-actuator:${springVersion}")
     implementation("io.micrometer:micrometer-registry-prometheus:1.10.2")
 
     // add for generate traceId and spanId
-    implementation("io.micrometer:micrometer-tracing:1.0.1")
     implementation("io.micrometer:micrometer-tracing-bridge-brave:1.0.1")
+    implementation("io.micrometer:micrometer-observation:1.10.4")
     implementation("io.zipkin.reporter2:zipkin-reporter-brave:2.16.3")
 
     runtimeOnly("org.postgresql:postgresql:${postgresqlVersion}")

@@ -1,4 +1,8 @@
 server:
+  compression:
+    enabled: true
+    mime-types: application/json
+    min-response-size: 1024
   servlet:
     context-path: "/api"
   port: ${USER_SERVICE_PORT:8080}
@@ -21,15 +25,11 @@ spring:
     drop-first: false
     change-log: classpath:db/master.xml
     default-schema: public
-    contexts: ${spring.profiles.active:prod} # use dev for create test data
+    contexts: ${spring.profiles.active:dev} # use dev for create test data
 
 logging:
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
-  level:
-    org.springframework.web.HttpLogging: TRACE
-    reactor.netty.http.server: DEBUG
-    reactor.netty.http.client: DEBUG
 
 management:
   tracing:

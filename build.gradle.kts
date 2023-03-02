@@ -2,7 +2,7 @@ import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import io.spring.gradle.dependencymanagement.dsl.ImportsHandler
 
 plugins {
-    id("org.springframework.boot") version "3.0.2"
+    id("org.springframework.boot") version "3.0.3"
     id("io.spring.dependency-management") version "1.1.0"
     java
     `maven-publish`
@@ -22,7 +22,6 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 // version variables
 val springVersion = "3.0.3"
 val lombokVersion = "1.18.26"
-val openApiVersion = "1.6.14"
 val postgresqlVersion = "42.5.1"
 val h2Version = "2.1.214"
 
@@ -44,7 +43,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation:${springVersion}")
     implementation("org.springframework.boot:spring-boot-starter-web:${springVersion}")
     implementation("org.springframework.boot:spring-boot-starter-actuator:${springVersion}")
-    implementation("org.springdoc:springdoc-openapi-ui:${openApiVersion}")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
     implementation("commons-validator:commons-validator:1.7")
     implementation("org.liquibase:liquibase-core:4.18.0")
     implementation("com.google.code.findbugs:jsr305:3.0.2")

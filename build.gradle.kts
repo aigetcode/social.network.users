@@ -48,6 +48,7 @@ dependencies {
     implementation("org.liquibase:liquibase-core:4.18.0")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
     implementation("io.micrometer:micrometer-registry-prometheus:1.10.2")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.3")
 
     // add for generate traceId and spanId
     implementation("io.micrometer:micrometer-tracing-bridge-brave:1.0.1")

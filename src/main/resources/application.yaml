@@ -5,7 +5,7 @@ server:
     min-response-size: 1024
   servlet:
     context-path: "/api"
-  port: ${USER_SERVICE_PORT:8080}
+  port: ${SERVICE_PORT:8080}
 
 spring:
   application:
@@ -48,7 +48,7 @@ management:
         enabled: true
   zipkin:
     tracing:
-      endpoint: ${USER_ZIPKIN_URL:http://localhost:9411/api/v2/spans}
+      endpoint: ${SERVICE_ZIPKIN_URL:http://localhost:9411/api/v2/spans}
 
 springdoc:
   api-docs:
@@ -58,6 +58,8 @@ springdoc:
     version: "v1"
 
 api:
+  logstash:
+    url: ${SERVICE_LOGSTASH_URL:localhost:5000}
   response-codes:
     ok:
       desc: OK

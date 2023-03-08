@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scn="true">
-
+    <springProperty name="destination" source="api.logstash.url"/>
     <property name="LOGS" value="./logs" />
 
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
@@ -30,6 +30,34 @@
             <maxHistory>60</maxHistory>
         </rollingPolicy>
     </appender>
+
+    <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>${destination}</destination>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <mdc />
+                <context />
+                <logLevel />
+                <loggerName />
+                <pattern>
+                    <pattern>
+                        {
+                        "app": "news-service"
+                        }
+                    </pattern>
+                </pattern>
+                <threadName />
+                <message />
+                <logstashMarkers />
+                <stackTrace />
+            </providers>
+        </encoder>
+    </appender>
+
+
+    <root level="info">
+        <appender-ref ref="logstash" />
+    </root>
 
     <root level="info">
         <appender-ref ref="RollingFile" />

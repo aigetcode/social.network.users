@@ -9,7 +9,7 @@ PROJECT_VERSION=$(grep -oP 'version = "\K[^"\047]+(?=["\047])' $BUILD_DIR/../../
 echo "Building image: social-users:$PROJECT_VERSION"
 
 
-cp "$BUILD_DIR/../../build/libs/users-$PROJECT_VERSION.jar" "$BUILD_DIR/users.jar"
+cp "$BUILD_DIR/../build/libs/users-$PROJECT_VERSION.jar" "$BUILD_DIR/users.jar"
 
 docker build -t "social-users:$PROJECT_VERSION" "$BUILD_DIR"
 

@@ -23,5 +23,5 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build docker image
         run: |
-          chmod +x docker/users/githubBuild.sh
-          docker/users/githubBuild.sh
+          chmod +x docker/githubBuild.sh
+          docker/githubBuild.sh

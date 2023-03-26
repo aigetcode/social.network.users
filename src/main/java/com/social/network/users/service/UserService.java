@@ -1,6 +1,9 @@
 package com.social.network.users.service;
 
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.util.IOUtils;
 import com.social.network.users.dao.HardSkillRepository;
+import com.social.network.users.dao.UserAvatarS3Repository;
 import com.social.network.users.dao.UserRepository;
 import com.social.network.users.dto.entry.UserEntry;
 import com.social.network.users.entity.Country;
@@ -11,6 +14,7 @@ import com.social.network.users.util.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.hibernate.Filter;
 import org.hibernate.Session;
@@ -22,7 +26,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,22 +44,25 @@ import java.util.UUID;
 @Service
 @Transactional
 public class UserService {
-
+    private static final String PHOTO_LINK_PREFIX = "/minio/post-photo-bucket/";
     private static final String USER_NOT_FOUND = "User not found";
 
     private final UserRepository userRepository;
     private final HardSkillRepository hardSkillService;
     private final CountryService countryService;
+    private final UserAvatarS3Repository avatarS3Repository;
 
     @PersistenceContext
     private EntityManager entityManager;
 
     public UserService(UserRepository userRepository,
                        HardSkillRepository hardSkillService,
-                       CountryService countryService) {
+                       CountryService countryService,
+                       UserAvatarS3Repository avatarS3Repository) {
         this.userRepository = userRepository;
         this.hardSkillService = hardSkillService;
         this.countryService = countryService;
+        this.avatarS3Repository = avatarS3Repository;
     }
 
     public Page<UserEntry> getPageUsers(int pageIndex, int pageSize, String countryName, Sort sort) {
@@ -167,4 +184,38 @@ public class UserService {
         user.setCountry(country);
     }
 
+    public String saveAndGetAvatar(String userId, MultipartFile file) {
+        log.info("Create avatar...");
+        Utils.required(userId, "User id is required");
+        Utils.required(file, "File is required");
+
+        String avatarUrl;
+        User user = userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+        try {
+            String filename = file.getOriginalFilename();
+            Path tempFile = Files.createTempFile("temp",
+                    "." + FilenameUtils.getExtension(filename));
+
+            File saveTempFile = tempFile.toFile();
+            try (InputStream fileInputStream = file.getInputStream();
+                 FileOutputStream output = new FileOutputStream(saveTempFile);
+                 FileInputStream inputStream = new FileInputStream(saveTempFile)) {
+                IOUtils.copy(fileInputStream, output);
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentLength(saveTempFile.length());
+                metadata.setContentType(Files.probeContentType(Paths.get(saveTempFile.toURI())));
+                avatarS3Repository.put(filename, inputStream, metadata);
+            }
+
+            avatarUrl = PHOTO_LINK_PREFIX + filename;
+            user.setAvatarUrl(avatarUrl);
+            userRepository.save(user);
+        } catch (IOException exception) {
+            throw new IllegalStateException("Something happen while save avatar for user: " + userId, exception);
+        }
+
+        log.info("Created avatar for userId:{}", userId);
+        return avatarUrl;
+    }
 }

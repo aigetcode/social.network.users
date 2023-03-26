@@ -26,7 +26,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.StreamUtils;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -282,7 +281,7 @@ class UserEndpointTest {
             mvc.perform(multipart("/v1/users/68cdef45-e98e-4e86-91c8-b8fe437ae01f/avatar/save")
                             .file(file))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.response").value( "/minio/post-photo-bucket/test.jpg"))
+                    .andExpect(jsonPath("$.response").value("/minio/post-photo-bucket/test.jpg"))
                     .andReturn();
         }
     }

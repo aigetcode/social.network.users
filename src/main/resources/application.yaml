@@ -57,6 +57,15 @@ springdoc:
     path: "/swagger-ui.html" # swagger: http://localhost:8080/api/swagger-ui/index.html
     version: "v1"
 
+aws:
+  s3:
+    endpoint: ${SERVICE_AWS_S3_HOST:http://localhost:9000}
+    singer: AWSS3V3SignerType
+    access-key: ${SERVICE_AWS_S3_ACCESS_KEY:u4QeDzDwDsK74FzE}
+    secret-key: ${SERVICE_AWS_S3_SECRET_KEY:Efmm0HwgHfH2lJM0VmdG8ehKaUz2WRNm}
+    region: ru-center
+    bucket-users-avatar: users-avatar-bucket
+
 api:
   logstash:
     url: ${SERVICE_LOGSTASH_URL:localhost:5000}

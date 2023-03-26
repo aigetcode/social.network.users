@@ -80,7 +80,7 @@ public class User {
     private Country country;
 
     @Column(name = "avatar", length = 500)
-    private String avatar;
+    private String avatarUrl;
 
     @Column(name = "user_description", length = 1000)
     private String userDescription;
@@ -115,7 +115,7 @@ public class User {
     }
 
     public User(Integer version, String name, String surname, String lastName, UserSex sex, Date birthdate, Country country,
-                String avatar, String userDescription, String nickname, String email, String phoneNumber) {
+                String avatarUrl, String userDescription, String nickname, String email, String phoneNumber) {
         this.version = version;
         this.name = name;
         this.surname = surname;
@@ -123,7 +123,7 @@ public class User {
         this.sex = sex;
         this.birthdate = birthdate;
         this.country = country;
-        this.avatar = avatar;
+        this.avatarUrl = avatarUrl;
         this.userDescription = userDescription;
         this.nickname = nickname;
         this.email = email;

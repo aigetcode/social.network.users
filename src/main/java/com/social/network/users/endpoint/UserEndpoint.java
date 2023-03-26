@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -60,10 +61,10 @@ public class UserEndpoint {
     @GetMapping
     @Operation(summary = "Получение пользователей постранично")
     public ResponseEntity<Page<UserEntry>> getPageUsers(@RequestParam(value = "pageIndex") int pageIndex,
-                                          @RequestParam(value = "pageSize") int pageSize,
-                                          @RequestParam(value = "country", required = false) String country,
-                                          @RequestParam(value = "sorting", defaultValue = "id,desc",
-                                                  required = false) String[] sortEntries) {
+                                                        @RequestParam(value = "pageSize") int pageSize,
+                                                        @RequestParam(value = "country", required = false) String country,
+                                                        @RequestParam(value = "sorting", defaultValue = "id,desc",
+                                                                required = false) String[] sortEntries) {
         Page<UserEntry> users = userService.getPageUsers(pageIndex, pageSize, country, SortDto.toSort(sortEntries));
         return ResponseEntity.ok(users);
     }
@@ -71,10 +72,10 @@ public class UserEndpoint {
     @GetMapping("{id}/followers")
     @Operation(summary = "Получение подписчиков пользователя постранично")
     public ResponseEntity<Page<UserEntry>> getPageFollowersByUserId(@PathVariable(value = "id") String userId,
-                                                       @RequestParam(value = "pageIndex") int pageIndex,
-                                                       @RequestParam(value = "pageSize") int pageSize,
-                                                       @RequestParam(value = "sorting", defaultValue = "id,desc",
-                                                               required = false) String[] sortEntries) {
+                                                                    @RequestParam(value = "pageIndex") int pageIndex,
+                                                                    @RequestParam(value = "pageSize") int pageSize,
+                                                                    @RequestParam(value = "sorting", defaultValue = "id,desc",
+                                                                            required = false) String[] sortEntries) {
         Page<UserEntry> users = userService.getFollowersByUserId(pageIndex, pageSize,
                 UUID.fromString(userId), SortDto.toSort(sortEntries));
         return ResponseEntity.ok(users);
@@ -108,7 +109,7 @@ public class UserEndpoint {
     @PutMapping("/{id}")
     @Operation(summary = "Обновление пользователя")
     public ResponseEntity<String> updateUser(@Valid @RequestBody UserInput userInput,
-                                        @PathVariable String id) {
+                                             @PathVariable String id) {
         User user = Utils.createUser(userInput);
         UUID uuid = userService.updateUser(UUID.fromString(id), user, userInput.getHardSkills());
         return ResponseEntity.ok(uuid.toString());
@@ -124,7 +125,7 @@ public class UserEndpoint {
     @PostMapping("/{followerId}/subscribe/{userId}")
     @Operation(summary = "Подписаться на пользователя")
     public ResponseEntity<Void> subscribe(@PathVariable String userId,
-                                       @PathVariable String followerId) {
+                                          @PathVariable String followerId) {
         userService.subscribe(UUID.fromString(userId), UUID.fromString(followerId));
         return ResponseEntity.ok().build();
     }
@@ -132,9 +133,17 @@ public class UserEndpoint {
     @PostMapping("/{followerId}/unsubscribe/{userId}")
     @Operation(summary = "Отписаться от пользователя")
     public ResponseEntity<Void> unsubscribe(@PathVariable String userId,
-                                         @PathVariable String followerId) {
+                                            @PathVariable String followerId) {
         userService.unsubscribe(UUID.fromString(userId), UUID.fromString(followerId));
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/avatar/save")
+    @Operation(summary = "Сохранить аватар пользователя")
+    public ResponseEntity<String> saveUserAvatar(@PathVariable(value = "id") String userId,
+                                                 @RequestParam MultipartFile files) {
+        String avatarUrl = userService.saveAndGetAvatar(userId, files);
+        return ResponseEntity.ok(avatarUrl);
     }
 
 }

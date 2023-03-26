@@ -53,7 +53,7 @@
             <column name="last_name" remarks="Last name" type="${string.type}(50 ${string.unit})"/>
             <column name="birthdate" remarks="Birthdate user" type="${timestamp.type}"/>
             <column name="email" remarks="User email" type="${string.type}(100 ${string.unit})"/>
-            <column name="avatar" remarks="Avatar" type="${string.type}(500 ${string.unit})"/>
+            <column name="avatarUrl" remarks="Avatar" type="${string.type}(500 ${string.unit})"/>
             <column name="nickname" remarks="Nickname" type="${string.type}(50 ${string.unit})">
                 <constraints nullable="false" unique="true"/>
             </column>

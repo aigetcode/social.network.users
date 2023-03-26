@@ -1,5 +1,7 @@
 package com.social.network.users.endpoint;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.social.network.users.dto.entry.UserEntry;
 import com.social.network.users.dto.input.UserInput;
@@ -12,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -21,17 +26,26 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.util.StreamUtils;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -51,6 +65,9 @@ class UserEndpointTest {
 
     @Autowired
     private MockMvc mvc;
+
+    @MockBean
+    private AmazonS3 client;
 
     @Container
     private static final PostgreSQLContainer<PostgresContainerWrapper> postgresContainer = new PostgresContainerWrapper();
@@ -244,6 +261,30 @@ class UserEndpointTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
+    }
+
+    @Test
+    @Sql(value = "classpath:./sql/insert-user.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
+    @Sql(value = "classpath:./sql/drop-users.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+            config = @SqlConfig(encoding = "utf-8"))
+    void createPhotoSuccess() throws Exception {
+        doReturn(new PutObjectResult()).when(client).putObject(any());
+        doNothing().when(client).deleteObject(any());
+
+        try (InputStream inputStream = new ClassPathResource("image/test.jpg").getInputStream()) {
+            byte[] bytes = StreamUtils.copyToByteArray(inputStream);
+            MockMultipartFile file = new MockMultipartFile("files", "test.jpg",
+                    MediaType.IMAGE_JPEG_VALUE, bytes);
+
+            mvc.perform(multipart("/v1/users/68cdef45-e98e-4e86-91c8-b8fe437ae01f/avatar/save")
+                            .file(file))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.response").value( "/minio/post-photo-bucket/test.jpg"))
+                    .andReturn();
+        }
     }
 
     private UserInput createUserInput() {

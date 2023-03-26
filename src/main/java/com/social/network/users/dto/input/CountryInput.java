@@ -10,11 +10,9 @@ import lombok.Setter;
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CountryInput {
-
     private Long id;
     @NotEmpty
     private String name;
     private String region;
     private String subregion;
-
 }

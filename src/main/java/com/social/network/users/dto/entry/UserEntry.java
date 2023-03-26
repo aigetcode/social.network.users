@@ -32,7 +32,7 @@ public class UserEntry {
     private String sex; // UserSex
     private Date birthdate;
     private Country country;
-    private String avatar;
+    private String avatarUrl;
     private String userDescription;
     private String nickname;
     private String email;
@@ -73,7 +73,7 @@ public class UserEntry {
 
         userEntry.setBirthdate(user.getBirthdate());
         userEntry.setCountry(user.getCountry());
-        userEntry.setAvatar(user.getAvatar());
+        userEntry.setAvatarUrl(user.getAvatarUrl());
         userEntry.setUserDescription(user.getUserDescription());
         userEntry.setNickname(user.getNickname());
         userEntry.setEmail(user.getEmail());

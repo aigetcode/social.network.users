@@ -49,6 +49,8 @@ dependencies {
     implementation("com.google.code.findbugs:jsr305:3.0.2")
     implementation("io.micrometer:micrometer-registry-prometheus:1.10.2")
     implementation("net.logstash.logback:logstash-logback-encoder:7.3")
+    implementation("com.amazonaws:aws-java-sdk-s3:1.12.414")
+    implementation("org.apache.commons:commons-io:1.3.2")
 
     // add for generate traceId and spanId
     implementation("io.micrometer:micrometer-tracing-bridge-brave:1.0.1")
